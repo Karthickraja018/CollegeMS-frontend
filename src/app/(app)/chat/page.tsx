@@ -1,10 +1,11 @@
 "use client"
 import { useState, useRef, useEffect, useCallback } from "react"
-import { Send, Sparkles, Database, TrendingUp, BarChart3, FileText, Zap, StopCircle } from "lucide-react"
+import { Send, Sparkles, Database, TrendingUp, BarChart3, FileText, Bot, StopCircle, User } from "lucide-react"
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts"
+import { motion, AnimatePresence } from "framer-motion"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
 
@@ -12,17 +13,14 @@ const SUGGESTED_PROMPTS = [
   "Show students with attendance below 75%",
   "Compare CSE and ECE department performance",
   "Show attendance trend for the last 6 months",
-  "Which subjects have the lowest pass rates?",
   "Generate a semester performance report for CSE",
-  "Identify students with declining marks",
-  "Show top 10 students in semester 5",
 ]
 
 const AGENT_CONFIG: Record<string, { label: string; color: string; icon: any; className: string }> = {
-  query: { label: "Query Agent", color: "#818CF8", icon: Database, className: "agent-query" },
-  performance: { label: "Performance Agent", color: "#F87171", icon: TrendingUp, className: "agent-perf" },
-  visualization: { label: "Visualization Agent", color: "#2DD4BF", icon: BarChart3, className: "agent-viz" },
-  report: { label: "Report Agent", color: "#FCD34D", icon: FileText, className: "agent-report" },
+  query: { label: "Query Agent", color: "#6366F1", icon: Database, className: "badge-indigo" },
+  performance: { label: "Performance Agent", color: "#F59E0B", icon: TrendingUp, className: "badge-warning" },
+  visualization: { label: "Visualization Agent", color: "#14B8A6", icon: BarChart3, className: "badge-teal" },
+  report: { label: "Report Agent", color: "#10B981", icon: FileText, className: "badge-success" },
 }
 
 const CHART_COLORS = ["#6366F1", "#14B8A6", "#F59E0B", "#EF4444", "#8B5CF6", "#10B981"]
@@ -33,7 +31,7 @@ function ChartRenderer({ spec }: { spec: any }) {
 
   const commonProps = {
     data,
-    margin: { top: 5, right: 10, left: 0, bottom: 5 },
+    margin: { top: 10, right: 10, left: -20, bottom: 0 },
   }
 
   const renderChart = () => {
@@ -41,25 +39,25 @@ function ChartRenderer({ spec }: { spec: any }) {
       case "bar":
         return (
           <BarChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 8 }} />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 11 }} axisLine={false} tickLine={false} dy={10} />
+            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip cursor={{ fill: "var(--bg-elevated)", opacity: 0.4 }} />
+            <Legend wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
             {(series || []).map((s: any, i: number) => (
-              <Bar key={s.dataKey} dataKey={s.dataKey} name={s.name} fill={s.color || CHART_COLORS[i]} radius={[4, 4, 0, 0]} animationDuration={800} />
+              <Bar key={s.dataKey} dataKey={s.dataKey} name={s.name} fill={s.color || CHART_COLORS[i]} radius={[4, 4, 0, 0]} animationDuration={800} maxBarSize={40} />
             ))}
           </BarChart>
         )
       case "line":
         return (
           <LineChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 10 }} axisLine={false} />
-            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 10 }} axisLine={false} />
-            <Tooltip contentStyle={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 8 }} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 11 }} axisLine={false} tickLine={false} dy={10} />
+            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip />
             {(series || []).map((s: any, i: number) => (
-              <Line key={s.dataKey} type="monotone" dataKey={s.dataKey} name={s.name} stroke={s.color || CHART_COLORS[i]} strokeWidth={2} dot={false} />
+              <Line key={s.dataKey} type="monotone" dataKey={s.dataKey} name={s.name} stroke={s.color || CHART_COLORS[i]} strokeWidth={2} dot={{ r: 4, fill: "var(--bg-surface)", strokeWidth: 2 }} activeDot={{ r: 6 }} />
             ))}
           </LineChart>
         )
@@ -74,10 +72,10 @@ function ChartRenderer({ spec }: { spec: any }) {
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 10 }} axisLine={false} />
-            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 10 }} axisLine={false} />
-            <Tooltip contentStyle={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 8 }} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 11 }} axisLine={false} tickLine={false} dy={10} />
+            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip />
             {(series || []).map((s: any, i: number) => (
               <Area key={s.dataKey} type="monotone" dataKey={s.dataKey} name={s.name} stroke={s.color || CHART_COLORS[i]} fill={`url(#grad_${i})`} strokeWidth={2} />
             ))}
@@ -90,8 +88,8 @@ function ChartRenderer({ spec }: { spec: any }) {
             <Pie data={data} dataKey={pieKey} nameKey={xAxis?.dataKey} cx="50%" cy="50%" outerRadius={80} animationDuration={800}>
               {data?.map((_: any, i: number) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
             </Pie>
-            <Tooltip contentStyle={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: 8 }} />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Tooltip />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
           </PieChart>
         )
       default:
@@ -100,9 +98,9 @@ function ChartRenderer({ spec }: { spec: any }) {
   }
 
   return (
-    <div style={{ marginTop: 12, background: "var(--bg-surface)", borderRadius: 10, padding: "12px 8px 8px", border: "1px solid var(--border)" }}>
-      {title && <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8, paddingLeft: 8 }}>{title}</div>}
-      <ResponsiveContainer width="100%" height={200}>
+    <div style={{ marginTop: 16, background: "var(--bg-card)", borderRadius: 12, padding: "20px 24px", border: "1px solid var(--border)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}>
+      {title && <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", marginBottom: 16 }}>{title}</div>}
+      <ResponsiveContainer width="100%" height={260}>
         {renderChart() as any}
       </ResponsiveContainer>
     </div>
@@ -113,17 +111,17 @@ function DataTable({ data }: { data: any[] }) {
   if (!data) return null
   if (data.length === 0) {
     return (
-      <div style={{ marginTop: 12, padding: "12px", borderRadius: 8, border: "1px solid var(--border)", textAlign: "center", color: "var(--text-muted)", fontSize: 13, background: "var(--bg-surface)" }}>
-        No records found.
+      <div style={{ marginTop: 16, padding: "24px", borderRadius: 12, border: "1px dashed var(--border)", textAlign: "center", color: "var(--text-muted)", fontSize: 13, background: "var(--bg-surface)" }}>
+        No records found matching your query.
       </div>
     )
   }
   const columns = Object.keys(data[0])
-  const displayCols = columns.slice(0, 6) // Limit columns in chat
+  const displayCols = columns.slice(0, 6)
 
   return (
-    <div style={{ marginTop: 12, overflowX: "auto", borderRadius: 8, border: "1px solid var(--border)" }}>
-      <table className="data-table" style={{ fontSize: 12 }}>
+    <div style={{ marginTop: 16, overflowX: "auto", borderRadius: 12, border: "1px solid var(--border)", background: "var(--bg-card)", boxShadow: "0 4px 24px rgba(0,0,0,0.04)" }}>
+      <table className="data-table">
         <thead>
           <tr>
             {displayCols.map(col => (
@@ -142,8 +140,8 @@ function DataTable({ data }: { data: any[] }) {
         </tbody>
       </table>
       {data.length > 10 && (
-        <div style={{ padding: "8px 14px", fontSize: 11, color: "var(--text-muted)", borderTop: "1px solid var(--border)" }}>
-          Showing 10 of {data.length} records
+        <div style={{ padding: "12px 16px", fontSize: 12, color: "var(--text-muted)", borderTop: "1px solid var(--border)", background: "var(--bg-surface)" }}>
+          Showing 10 of {data.length} records. For a full list, generate a report.
         </div>
       )}
     </div>
@@ -264,114 +262,161 @@ export default function ChatPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 48px)" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - var(--header-height) - 64px)", maxWidth: 800, margin: "0 auto", width: "100%" }}>
+      
       {/* Header */}
-      <div className="page-header" style={{ marginBottom: 16, flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, #6366F1, #14B8A6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Sparkles size={16} color="white" />
-          </div>
-          <div>
-            <h1 className="page-title" style={{ fontSize: 18 }}>AI Assistant</h1>
-            <p className="page-subtitle">Ask anything about your institutional data</p>
-          </div>
-        </div>
+      <div style={{ marginBottom: 24, textAlign: "center" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>AI Assistant</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 4 }}>Ask anything about your institutional data</p>
       </div>
 
-      {/* Messages */}
-      <div className="chat-messages" style={{ flex: 1, overflow: "auto" }}>
+      {/* Messages Area */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "0 16px", display: "flex", flexDirection: "column", gap: 32 }}>
+        
         {messages.length === 0 && (
-          <div style={{ textAlign: "center", padding: "48px 24px" }}>
-            <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(20,184,166,0.2))", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-              <Zap size={24} color="var(--indigo)" />
+          <div style={{ margin: "auto", width: "100%", maxWidth: 500, textAlign: "center" }}>
+            <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--indigo-glow)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", border: "1px solid rgba(99, 102, 241, 0.2)" }}>
+              <Sparkles size={32} color="var(--indigo)" />
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>What would you like to know?</h2>
-            <p style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 32 }}>
-              Ask in natural language — the AI will query your database and visualize results
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: "var(--text-primary)", marginBottom: 12 }}>How can I help you today?</h2>
+            <p style={{ color: "var(--text-secondary)", fontSize: 14, marginBottom: 32, lineHeight: 1.6 }}>
+              I can analyze attendance patterns, compare department performance, or generate complete PDF reports on demand.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
-              {SUGGESTED_PROMPTS.map(p => (
-                <button key={p} onClick={() => sendMessage(p)} style={{
-                  background: "var(--bg-elevated)", border: "1px solid var(--border)",
-                  borderRadius: 20, padding: "7px 14px", fontSize: 13, color: "var(--text-secondary)",
-                  cursor: "pointer", transition: "all 0.15s",
-                }} onMouseEnter={e => { (e.target as any).style.borderColor = "var(--indigo)"; (e.target as any).style.color = "var(--text-primary)" }}
-                  onMouseLeave={e => { (e.target as any).style.borderColor = "var(--border)"; (e.target as any).style.color = "var(--text-secondary)" }}>
-                  {p}
-                </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {SUGGESTED_PROMPTS.map((p, i) => (
+                <motion.button 
+                  key={p} 
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+                  onClick={() => sendMessage(p)} 
+                  className="card hover:border-[var(--indigo)] transition-colors cursor-pointer text-left"
+                  style={{ padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--bg-surface)" }}
+                >
+                  <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>{p}</span>
+                  <Send size={14} color="var(--text-muted)" />
+                </motion.button>
               ))}
             </div>
           </div>
         )}
 
-        {messages.map(msg => {
+        {messages.map((msg, idx) => {
           const agentCfg = msg.agent ? AGENT_CONFIG[msg.agent] : null
           const AgentIcon = agentCfg?.icon
 
           return (
-            <div key={msg.id} className={`message-bubble ${msg.role}`}>
-              {msg.role === "user" ? (
-                <div className="message-content-user">{msg.content}</div>
-              ) : (
-                <div>
-                  {agentCfg && (
-                    <div className={`agent-badge ${agentCfg.className}`}>
-                      {AgentIcon && <AgentIcon size={10} />}
-                      {agentCfg.label}
-                    </div>
-                  )}
-                  <div className={`message-content-assistant ${msg.isStreaming ? "streaming-cursor" : ""}`}>
-                    {msg.content || (msg.isStreaming ? "" : "…")}
+            <motion.div 
+              key={msg.id} 
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              style={{ display: "flex", gap: 16, maxWidth: "100%", flexDirection: msg.role === "user" ? "row-reverse" : "row" }}
+            >
+              {/* Avatar */}
+              <div style={{ 
+                width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: msg.role === "user" ? "var(--bg-elevated)" : "var(--indigo-glow)",
+                border: "1px solid var(--border)",
+                color: msg.role === "user" ? "var(--text-secondary)" : "var(--indigo)"
+              }}>
+                {msg.role === "user" ? <User size={16} /> : <Bot size={16} />}
+              </div>
+
+              {/* Message Content */}
+              <div style={{ maxWidth: "85%", display: "flex", flexDirection: "column", gap: 8, alignItems: msg.role === "user" ? "flex-end" : "flex-start" }}>
+                
+                {agentCfg && (
+                  <div className={`badge ${agentCfg.className}`} style={{ alignSelf: "flex-start" }}>
+                    {AgentIcon && <AgentIcon size={12} />}
+                    {agentCfg.label}
                   </div>
-                  {msg.tableData && <DataTable data={msg.tableData} />}
-                  {msg.chartSpec && <ChartRenderer spec={msg.chartSpec} />}
-                  {msg.reportUrl && (
-                    <a href={`${API_URL}${msg.reportUrl}`} target="_blank" rel="noopener noreferrer"
-                      className="btn btn-teal" style={{ marginTop: 12, display: "inline-flex", fontSize: 13 }}>
-                      <FileText size={14} /> Download Report
-                    </a>
-                  )}
+                )}
+
+                <div style={{ 
+                  background: msg.role === "user" ? "var(--indigo)" : "transparent",
+                  color: msg.role === "user" ? "white" : "var(--text-primary)",
+                  padding: msg.role === "user" ? "12px 16px" : "0",
+                  borderRadius: msg.role === "user" ? "16px 16px 4px 16px" : "0",
+                  fontSize: 15, lineHeight: 1.6
+                }}>
+                  {msg.content || (msg.isStreaming ? (
+                    <span style={{ display: "inline-block", width: 8, height: 16, background: "var(--indigo)", animation: "pulse 1s infinite" }} />
+                  ) : "")}
                 </div>
-              )}
-            </div>
+
+                {msg.tableData && <DataTable data={msg.tableData} />}
+                {msg.chartSpec && <ChartRenderer spec={msg.chartSpec} />}
+                
+                {msg.reportUrl && (
+                  <motion.a 
+                    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                    href={`${API_URL}${msg.reportUrl}`} target="_blank" rel="noopener noreferrer"
+                    className="btn btn-secondary" style={{ marginTop: 8, display: "inline-flex", fontSize: 13, alignSelf: "flex-start", background: "var(--bg-surface)" }}
+                  >
+                    <FileText size={16} color="var(--indigo)" /> Download PDF Report
+                  </motion.a>
+                )}
+              </div>
+            </motion.div>
           )
         })}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} style={{ height: 1 }} />
       </div>
 
-      {/* Input */}
-      <div className="chat-input-area" style={{ flexShrink: 0 }}>
-        <div className="chat-input-wrapper">
+      {/* Input Area */}
+      <div style={{ marginTop: 24, position: "relative" }}>
+        <div style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border)",
+          borderRadius: 16,
+          padding: "12px 16px",
+          display: "flex",
+          alignItems: "flex-end",
+          gap: 12,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.06)",
+          transition: "border-color 0.2s"
+        }}
+        className="focus-within:border-[var(--indigo)]"
+        >
           <textarea
             ref={textareaRef}
-            className="chat-textarea"
-            placeholder="Ask about students, attendance, performance, reports…"
+            placeholder="Ask AI to query data, compare metrics, or generate reports..."
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             rows={1}
-            style={{ lineHeight: "1.5", paddingTop: 2 }}
+            style={{ 
+              flex: 1, background: "transparent", border: "none", outline: "none", 
+              color: "var(--text-primary)", fontSize: 15, resize: "none", maxHeight: 160,
+              paddingTop: 8, paddingBottom: 8, lineHeight: 1.5, fontFamily: "inherit"
+            }}
           />
-          {isLoading ? (
-            <button onClick={() => abortRef.current?.()} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--danger)", padding: 4 }}>
-              <StopCircle size={20} />
-            </button>
-          ) : (
-            <button onClick={() => sendMessage(input)} disabled={!input.trim()} style={{
-              background: input.trim() ? "var(--indigo)" : "var(--bg-hover)",
-              border: "none", borderRadius: 8, padding: "7px 10px",
-              cursor: input.trim() ? "pointer" : "default",
-              color: input.trim() ? "white" : "var(--text-muted)",
-              transition: "all 0.15s",
-            }}>
-              <Send size={16} />
-            </button>
-          )}
+          <div style={{ display: "flex", alignItems: "center", paddingBottom: 4 }}>
+            {isLoading ? (
+              <button onClick={() => abortRef.current?.()} style={{ background: "transparent", border: "none", cursor: "pointer", color: "var(--danger)", padding: 8, borderRadius: 8 }} className="hover:bg-[var(--bg-elevated)] transition-colors">
+                <StopCircle size={20} />
+              </button>
+            ) : (
+              <button 
+                onClick={() => sendMessage(input)} 
+                disabled={!input.trim()} 
+                style={{
+                  background: input.trim() ? "var(--indigo)" : "var(--bg-elevated)",
+                  border: "none", borderRadius: 10, padding: 10,
+                  cursor: input.trim() ? "pointer" : "default",
+                  color: input.trim() ? "white" : "var(--text-muted)",
+                  transition: "all 0.2s",
+                }}
+                className={input.trim() ? "hover:bg-[var(--indigo-dim)]" : ""}
+              >
+                <Send size={18} />
+              </button>
+            )}
+          </div>
         </div>
-        <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6, textAlign: "center" }}>
-          Press Enter to send · Shift+Enter for new line
+        <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 8, textAlign: "center", fontWeight: 500 }}>
+          CollegeMS AI can make mistakes. Verify critical reports before acting.
         </p>
       </div>
+
     </div>
   )
 }

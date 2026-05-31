@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "CollegeMS — AI-Powered College Management System",
+  title: "CollegeMS — Enterprise College Management",
   description: "Manage your institution with AI agents, real-time analytics, and smart reports.",
 }
 
