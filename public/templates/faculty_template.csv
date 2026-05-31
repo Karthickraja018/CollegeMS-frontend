@@ -1,0 +1,3 @@
+email,full_name,employee_id,department_id,designation,qualification,experience_years,phone
+dr.brown@example.com,Dr. Alan Brown,EMP101,1,Professor,Ph.D. in Computer Science,12,9876543220
+sarah.connor@example.com,Sarah Connor,EMP102,1,Assistant Professor,M.Tech in IT,5,9876543221

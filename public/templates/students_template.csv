@@ -1,0 +1,3 @@
+name,email,roll_number,department_id,program_id,batch,register_number,phone,gender,dob
+John Doe,johndoe@example.com,CS2024001,1,1,2024-2028,REG1001,9876543210,male,2005-06-15
+Jane Smith,janesmith@example.com,CS2024002,1,1,2024-2028,REG1002,9876543211,female,2005-08-22

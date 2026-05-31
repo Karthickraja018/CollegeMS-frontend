@@ -125,8 +125,8 @@ const navGroups: { title: string; items: NavItem[] }[] = [
           { href: "/admin/placements/analytics", label: "Analytics", icon: BarChart3 },
         ],
       },
-      { href: "/reports", label: "Reports", icon: FileText },
-      { href: "/upload", label: "Data Import", icon: Upload },
+      { href: "/admin/reports", label: "Reports", icon: FileText },
+      { href: "/admin/import", label: "Data Import", icon: Upload },
     ],
   },
   {

@@ -235,3 +235,16 @@ export const settingsApi = {
   updateCollege: (data: any) => api.patch("/admin/settings/college", data).then((r) => r.data),
   getNaac: () => api.get("/admin/settings/naac").then((r) => r.data),
 }
+
+// ─── Phase 4: Import ──────────────────────────────────────────────────────────
+
+export const importApi = {
+  importStudents: (formData: FormData) =>
+    api.post("/admin/import/students", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }).then((r) => r.data),
+  importFaculty: (formData: FormData) =>
+    api.post("/admin/import/faculty", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }).then((r) => r.data),
+}
