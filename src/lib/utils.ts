@@ -1,43 +1,32 @@
-import { type ClassValue, clsx } from "clsx"
+import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// ─── Pre-existing helpers used by legacy pages ─────────────────────────────
+
+export function formatDate(dateString: string | null | undefined, opts?: Intl.DateTimeFormatOptions): string {
+  if (!dateString) return "—"
+  return new Date(dateString).toLocaleDateString("en-IN", opts || { day: "numeric", month: "short", year: "numeric" })
+}
+
 export function formatPercentage(value: number | null | undefined, decimals = 1): string {
-  if (value === null || value === undefined) return "N/A"
-  return `${value.toFixed(decimals)}%`
+  if (value === null || value === undefined) return "—"
+  return `${Number(value).toFixed(decimals)}%`
 }
 
-export function getRiskColor(score: number | null | undefined): string {
-  if (!score) return "text-slate-400"
-  if (score >= 81) return "text-red-400"
-  if (score >= 61) return "text-orange-400"
-  if (score >= 31) return "text-yellow-400"
-  return "text-emerald-400"
-}
-
-export function getRiskLabel(score: number | null | undefined): string {
-  if (!score) return "Not Analyzed"
-  if (score >= 81) return "Critical"
-  if (score >= 61) return "High"
-  if (score >= 31) return "Medium"
+export function getRiskLabel(score: number): string {
+  if (score >= 80) return "Critical"
+  if (score >= 60) return "High"
+  if (score >= 40) return "Medium"
   return "Low"
 }
 
-export function getRiskBgColor(score: number | null | undefined): string {
-  if (!score) return "bg-slate-800 text-slate-400"
-  if (score >= 81) return "bg-red-900/40 text-red-400 border-red-800"
-  if (score >= 61) return "bg-orange-900/40 text-orange-400 border-orange-800"
-  if (score >= 31) return "bg-yellow-900/40 text-yellow-400 border-yellow-800"
-  return "bg-emerald-900/40 text-emerald-400 border-emerald-800"
-}
-
-export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
+export function getRiskBgColor(score: number): string {
+  if (score >= 80) return "bg-red-100 text-red-700"
+  if (score >= 60) return "bg-orange-100 text-orange-700"
+  if (score >= 40) return "bg-amber-100 text-amber-700"
+  return "bg-emerald-100 text-emerald-700"
 }

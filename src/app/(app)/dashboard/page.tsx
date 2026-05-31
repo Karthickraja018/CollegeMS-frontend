@@ -1,279 +1,352 @@
 "use client"
+
 import { useQuery } from "@tanstack/react-query"
-import { api } from "@/services/api"
+import { dashboardApi, analyticsApi } from "@/services/admin"
+import { StatCard } from "@/components/ui/admin"
 import {
-  Users, TrendingUp, AlertTriangle, CheckCircle, FileText, Upload,
-  MessageSquare, Sparkles, ArrowUpRight, ArrowDownRight, Activity, Clock
+  Users, GraduationCap, Building2, BookOpen, Calendar,
+  TrendingUp, CheckCircle, AlertTriangle, Briefcase,
+  DollarSign, FileText, Cpu, Sparkles, ArrowRight,
+  Activity, Upload, MessageSquare, Clock, RefreshCw,
 } from "lucide-react"
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
-  CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line
+  CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  RadialBarChart, RadialBar, PieChart, Pie, Cell,
 } from "recharts"
-import { formatPercentage } from "@/lib/utils"
+import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
 import { useState } from "react"
-import { motion } from "framer-motion"
 
-// --- Custom Components ---
+// ─────────────────────────────────────────────────────────────────────────────
+// Custom Tooltip
+// ─────────────────────────────────────────────────────────────────────────────
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload?.length) {
-    return (
-      <div className="bg-white border border-[#E2E8F0] rounded-lg p-3 shadow-lg text-sm">
-        <p className="font-semibold text-[#0F172A] mb-2">{label}</p>
-        {payload.map((p: any) => (
-          <div key={p.name} className="flex items-center gap-4 mb-1">
-            <span className="flex items-center gap-2 text-[#475569]">
-              <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-              {p.name}
-            </span>
-            <strong className="text-[#0F172A] ml-auto">
-              {typeof p.value === "number" ? `${p.value}%` : p.value}
-            </strong>
-          </div>
-        ))}
-      </div>
-    )
-  }
-  return null
-}
-
-function StatCard({ label, value, icon: Icon, trend, trendLabel, sparklineData }: any) {
-  const isPositive = trend && trend >= 0
+function ChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-6 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className="w-10 h-10 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-[#475569]">
-          <Icon size={20} />
+    <div className="bg-white border border-[#E2E8F0] rounded-xl p-3 shadow-xl text-sm">
+      <p className="font-bold text-[#0F172A] mb-2">{label}</p>
+      {payload.map((p: any) => (
+        <div key={p.name} className="flex items-center gap-3 mb-1">
+          <span className="flex items-center gap-2 text-[#64748B]">
+            <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
+            {p.name}
+          </span>
+          <strong className="ml-auto text-[#0F172A]">
+            {typeof p.value === "number" ? `${p.value}${p.name.includes("Att") ? "%" : ""}` : p.value}
+          </strong>
         </div>
-        {trend !== undefined && (
-          <div className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full ${isPositive ? 'bg-[#10B981]/10 text-[#10B981]' : 'bg-[#EF4444]/10 text-[#EF4444]'}`}>
-            {isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-            {Math.abs(trend)}%
-          </div>
-        )}
-      </div>
-      <div>
-        <div className="text-[#475569] text-sm font-medium mb-1">{label}</div>
-        <div className="text-3xl font-bold text-[#0F172A] tracking-tight">{value}</div>
-      </div>
-      {/* Sparkline */}
-      {sparklineData && (
-        <div className="h-10 mt-4 -mx-2">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={sparklineData}>
-              <Line type="monotone" dataKey="value" stroke={isPositive ? "#10B981" : "#6366F1"} strokeWidth={2} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-      {trendLabel && <div className="text-xs font-medium text-[#94A3B8] mt-4 pt-4 border-t border-[#E2E8F0]">{trendLabel}</div>}
-    </motion.div>
-  )
-}
-
-function ActionCard({ title, desc, icon: Icon, onClick }: any) {
-  return (
-    <div 
-      onClick={onClick}
-      className="bg-white border border-[#E2E8F0] rounded-xl p-4 flex items-center gap-4 hover:border-[#6366F1] hover:shadow-md cursor-pointer transition-all duration-200 group"
-    >
-      <div className="w-12 h-12 rounded-xl bg-[#F1F5F9] group-hover:bg-[#6366F1]/10 flex items-center justify-center transition-colors">
-        <Icon size={24} className="text-[#475569] group-hover:text-[#6366F1] transition-colors" />
-      </div>
-      <div>
-        <div className="text-sm font-semibold text-[#0F172A]">{title}</div>
-        <div className="text-xs text-[#475569] mt-0.5">{desc}</div>
-      </div>
+      ))}
     </div>
   )
 }
 
-// --- Main Page ---
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Insight Card
+// ─────────────────────────────────────────────────────────────────────────────
+
+const insightColors: Record<string, { bg: string; border: string; icon: string; dot: string }> = {
+  warning: { bg: "bg-amber-50", border: "border-amber-200", icon: "text-amber-600", dot: "bg-amber-500" },
+  critical: { bg: "bg-red-50", border: "border-red-200", icon: "text-red-600", dot: "bg-red-500" },
+  success: { bg: "bg-emerald-50", border: "border-emerald-200", icon: "text-emerald-600", dot: "bg-emerald-500" },
+  info: { bg: "bg-blue-50", border: "border-blue-200", icon: "text-blue-600", dot: "bg-blue-500" },
+}
+
+const insightIcons: Record<string, React.ElementType> = {
+  "alert-triangle": AlertTriangle,
+  "trending-up": TrendingUp,
+  "users": Users,
+  "dollar-sign": DollarSign,
+  "briefcase": Briefcase,
+  "award": CheckCircle,
+}
+
+function InsightCard({ insight, idx }: { insight: any; idx: number }) {
+  const colors = insightColors[insight.type] || insightColors.info
+  const Icon = insightIcons[insight.icon] || AlertTriangle
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: idx * 0.1 }}
+      className={`flex gap-3 p-4 rounded-xl border ${colors.bg} ${colors.border}`}
+    >
+      <div className={`w-8 h-8 rounded-lg bg-white flex items-center justify-center flex-shrink-0 shadow-sm`}>
+        <Icon size={16} className={colors.icon} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-semibold text-[#0F172A] leading-snug">{insight.title}</div>
+        <div className="text-xs text-[#64748B] mt-0.5 leading-relaxed">{insight.body}</div>
+      </div>
+    </motion.div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Quick Action Card
+// ─────────────────────────────────────────────────────────────────────────────
+
+function QuickAction({ href, icon: Icon, label, desc, color }: {
+  href: string; icon: React.ElementType; label: string; desc: string; color: string
+}) {
+  return (
+    <Link href={href}>
+      <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-[#F8FAFC] border border-transparent hover:border-[#E2E8F0] transition-all group cursor-pointer">
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105"
+          style={{ background: `${color}15` }}
+        >
+          <Icon size={18} style={{ color }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-semibold text-[#0F172A]">{label}</div>
+          <div className="text-xs text-[#94A3B8]">{desc}</div>
+        </div>
+        <ArrowRight size={14} className="text-[#CBD5E1] group-hover:text-[#6366F1] transition-colors" />
+      </div>
+    </Link>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Dashboard Page
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ["dashboard-stats"],
-    queryFn: () => api.get("/analytics/dashboard").then(r => r.data),
+  const [insightsOpen, setInsightsOpen] = useState(true)
+
+  const { data: kpis, isLoading: kpisLoading, refetch: refetchKPIs } = useQuery({
+    queryKey: ["admin-kpis"],
+    queryFn: dashboardApi.getKPIs,
+    staleTime: 60_000,
   })
 
-  const { data: trend } = useQuery({
+  const { data: insightsData, isLoading: insightsLoading } = useQuery({
+    queryKey: ["admin-insights"],
+    queryFn: dashboardApi.getInsights,
+    staleTime: 120_000,
+  })
+
+  const { data: attendanceTrend } = useQuery({
     queryKey: ["attendance-trend"],
-    queryFn: () => api.get("/analytics/attendance-trend").then(r => r.data),
+    queryFn: () => analyticsApi.getAttendanceTrend(6),
+    staleTime: 120_000,
   })
 
   const { data: deptPerf } = useQuery({
     queryKey: ["dept-performance"],
-    queryFn: () => api.get("/analytics/department-performance").then(r => r.data),
+    queryFn: analyticsApi.getDepartmentPerformance,
+    staleTime: 120_000,
   })
 
-  // Mock sparkline data for aesthetic
-  const mockSparkline1 = [{ value: 30 }, { value: 40 }, { value: 35 }, { value: 50 }, { value: 45 }, { value: 60 }]
-  const mockSparkline2 = [{ value: 80 }, { value: 85 }, { value: 82 }, { value: 88 }, { value: 89 }, { value: 92 }]
+  const fmt = (n: number | undefined, suffix = "") =>
+    n === undefined ? "—" : `${n.toLocaleString()}${suffix}`
+  const fmtPct = (n: number | undefined) => (n === undefined ? "—" : `${n}%`)
 
-  const kpis = [
-    { label: "Total Students", value: statsLoading ? "—" : stats?.total_students ?? 0, icon: Users, trend: 12, trendLabel: "vs last month", sparklineData: mockSparkline1 },
-    { label: "Avg Attendance", value: statsLoading ? "—" : formatPercentage(stats?.avg_attendance), icon: TrendingUp, trend: 4.2, trendLabel: "vs last month", sparklineData: mockSparkline2 },
-    { label: "At-Risk Students", value: statsLoading ? "—" : stats?.at_risk_count ?? 0, icon: AlertTriangle, trend: -15, trendLabel: "vs last week" },
-    { label: "Pass Percentage", value: statsLoading ? "—" : formatPercentage(stats?.pass_percentage), icon: CheckCircle, trend: 2.1, trendLabel: "Overall marks" },
+  const kpiCards = [
+    { label: "Total Students", value: fmt(kpis?.total_students), icon: GraduationCap, color: "#6366F1", trend: undefined },
+    { label: "Total Faculty", value: fmt(kpis?.total_faculty), icon: UserCheck_, color: "#8B5CF6", trend: undefined },
+    { label: "Departments", value: fmt(kpis?.total_departments), icon: Building2, color: "#EC4899", trend: undefined },
+    { label: "Programs", value: fmt(kpis?.total_programs), icon: BookOpen, color: "#F59E0B", trend: undefined },
+    { label: "Active Semesters", value: fmt(kpis?.active_semesters), icon: Calendar, color: "#14B8A6", trend: undefined },
+    { label: "Avg Attendance", value: fmtPct(kpis?.avg_attendance), icon: TrendingUp, color: "#10B981", trend: undefined },
+    { label: "Pass Percentage", value: fmtPct(kpis?.pass_percentage), icon: CheckCircle, color: "#3B82F6", trend: undefined },
+    { label: "At-Risk Students", value: fmt(kpis?.at_risk_students), icon: AlertTriangle, color: "#EF4444", trend: undefined },
+    { label: "Placement Rate", value: fmtPct(kpis?.placement_rate), icon: Briefcase, color: "#6366F1", trend: undefined },
+    { label: "Fee Collected", value: kpis ? `₹${(kpis.fee_collected / 100000).toFixed(1)}L` : "—", icon: DollarSign, color: "#10B981", trend: undefined },
+    { label: "Reports Generated", value: fmt(kpis?.reports_generated), icon: FileText, color: "#8B5CF6", trend: undefined },
+    { label: "AI Queries", value: fmt(kpis?.ai_queries_processed), icon: Cpu, color: "#F59E0B", trend: undefined },
   ]
+
+  const insights = insightsData?.insights || []
 
   return (
     <div className="flex flex-col gap-8 max-w-[1600px]">
-      
-      {/* Hero Section */}
-      <section className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold text-[#0F172A] tracking-tight">Welcome back, Administrator 👋</h1>
-          <p className="text-sm font-medium text-[#475569] mt-1">
-            College of Engineering • Academic Year 2026 • Last synced just now
-          </p>
+
+      {/* Header */}
+      <section className="flex flex-col gap-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#0F172A] tracking-tight">
+              System Dashboard
+            </h1>
+            <p className="text-sm text-[#94A3B8] mt-0.5 font-medium">
+              Real-time overview of all college operations
+            </p>
+          </div>
+          <button
+            onClick={() => refetchKPIs()}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[#E2E8F0] text-sm font-medium text-[#64748B] hover:bg-[#F8FAFC] transition-all"
+          >
+            <RefreshCw size={14} />
+            Refresh
+          </button>
         </div>
 
-        {/* AI Summary Card */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
-          className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-center gap-6 relative overflow-hidden"
+        {/* AI Insights Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] rounded-2xl p-5 text-white relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#6366F1]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-          
-          <div className="w-14 h-14 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center flex-shrink-0">
-            <Sparkles size={28} className="text-[#6366F1]" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-base font-semibold text-[#0F172A] mb-2">Platform AI Insights</h3>
-            <div className="flex flex-wrap gap-x-8 gap-y-2 text-sm font-medium text-[#475569]">
-              <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" /> Attendance improved by 4.2% this month</div>
-              <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" /> 0 students are currently at critical risk</div>
-              <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#6366F1]" /> 2 reports generated this week</div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+          <div className="absolute bottom-0 right-20 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 pointer-events-none" />
+          <div className="relative flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
+              <Sparkles size={22} />
             </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-base">AI Platform Intelligence</h3>
+              <p className="text-white/75 text-xs mt-0.5">
+                {insightsLoading ? "Analyzing live data…" : `${insights.length} insights generated from your current data`}
+              </p>
+            </div>
+            <button
+              onClick={() => setInsightsOpen(!insightsOpen)}
+              className="text-white/80 hover:text-white text-xs font-semibold transition-colors"
+            >
+              {insightsOpen ? "Hide" : "Show insights"}
+            </button>
           </div>
+
+          <AnimatePresence>
+            {insightsOpen && insights.length > 0 && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {insights.slice(0, 3).map((ins: any, i: number) => (
+                    <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-sm border border-white/20">
+                      <div className="font-semibold">{ins.title}</div>
+                      <div className="text-white/70 text-xs mt-0.5 line-clamp-2">{ins.body}</div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </section>
 
-      {/* KPI Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {kpis.map((k) => (
-          <StatCard key={k.label} {...k} />
-        ))}
+      {/* 12 KPI Grid */}
+      <section>
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4">
+          {kpiCards.map((card, i) => (
+            kpisLoading ? (
+              <div key={card.label} className="h-28 bg-white rounded-2xl border border-[#E2E8F0] animate-pulse" />
+            ) : (
+              <StatCard key={card.label} index={i} {...card} />
+            )
+          ))}
+        </div>
       </section>
 
-      {/* Main Content Grid */}
+      {/* Charts + Panels Row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        
-        {/* Charts Column (Span 2) */}
+
+        {/* Charts Column */}
         <div className="xl:col-span-2 flex flex-col gap-6">
-          {/* Attendance Chart */}
+
+          {/* Attendance Trend */}
           <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm">
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold text-[#0F172A]">Attendance Trends</h3>
-              <p className="text-xs font-medium text-[#94A3B8] mt-1">Monthly college-wide attendance</p>
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="text-base font-bold text-[#0F172A]">Attendance Trends</h3>
+                <p className="text-xs text-[#94A3B8] mt-0.5">Monthly college-wide attendance rate</p>
+              </div>
+              <Link href="/analytics" className="text-xs font-semibold text-[#6366F1] hover:underline flex items-center gap-1">
+                Full analytics <ArrowRight size={12} />
+              </Link>
             </div>
-            <div className="h-[280px] w-full">
+            <div className="h-[240px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={attendanceTrend || []} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="colorAtt" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.2} />
+                    <linearGradient id="attGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.25} />
                       <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                  <XAxis dataKey="month" tick={{ fill: "#94A3B8", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
-                  <YAxis domain={[60, 100]} tick={{ fill: "#94A3B8", fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
-                  <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#E2E8F0", strokeWidth: 1, strokeDasharray: "4 4" }} />
-                  <Area type="monotone" dataKey="attendance" name="Attendance" stroke="#6366F1" strokeWidth={3} fill="url(#colorAtt)" animationDuration={1000} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                  <XAxis dataKey="month" tick={{ fill: "#94A3B8", fontSize: 11 }} axisLine={false} tickLine={false} dy={8} />
+                  <YAxis domain={[60, 100]} tick={{ fill: "#94A3B8", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
+                  <Tooltip content={<ChartTooltip />} cursor={{ stroke: "#E2E8F0", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                  <Area type="monotone" dataKey="attendance" name="Attendance" stroke="#6366F1" strokeWidth={2.5} fill="url(#attGrad)" animationDuration={800} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Department Chart */}
+          {/* Department Comparison */}
           <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm">
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold text-[#0F172A]">Department Comparison</h3>
-              <p className="text-xs font-medium text-[#94A3B8] mt-1">Attendance vs Average Marks</p>
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="text-base font-bold text-[#0F172A]">Department Performance</h3>
+                <p className="text-xs text-[#94A3B8] mt-0.5">Attendance vs. average marks by department</p>
+              </div>
             </div>
-            <div className="h-[280px] w-full">
+            <div className="h-[240px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={deptPerf || []} barGap={8} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                  <XAxis dataKey="code" tick={{ fill: "#94A3B8", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
-                  <YAxis domain={[0, 100]} tick={{ fill: "#94A3B8", fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: "#F8FAFC" }} />
-                  <Legend wrapperStyle={{ fontSize: 13, color: "#475569", paddingTop: 10, fontWeight: 500 }} iconType="circle" />
-                  <Bar dataKey="attendance_pct" name="Attendance" fill="#6366F1" radius={[4, 4, 0, 0]} animationDuration={1000} maxBarSize={32} />
-                  <Bar dataKey="avg_marks_pct" name="Avg Marks" fill="#14B8A6" radius={[4, 4, 0, 0]} animationDuration={1200} maxBarSize={32} />
+                <BarChart data={deptPerf || []} barGap={4} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                  <XAxis dataKey="code" tick={{ fill: "#94A3B8", fontSize: 11 }} axisLine={false} tickLine={false} dy={8} />
+                  <YAxis domain={[0, 100]} tick={{ fill: "#94A3B8", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
+                  <Tooltip content={<ChartTooltip />} cursor={{ fill: "#F8FAFC" }} />
+                  <Legend wrapperStyle={{ fontSize: 12, color: "#64748B", paddingTop: 10 }} iconType="circle" />
+                  <Bar dataKey="attendance_pct" name="Attendance" fill="#6366F1" radius={[4, 4, 0, 0]} maxBarSize={28} animationDuration={600} />
+                  <Bar dataKey="avg_marks_pct" name="Avg Marks" fill="#14B8A6" radius={[4, 4, 0, 0]} maxBarSize={28} animationDuration={800} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
 
-        {/* Sidebar Column (Span 1) */}
+        {/* Right Column */}
         <div className="flex flex-col gap-6">
-          
-          {/* AI Insights Panel */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#0F172A] mb-6">Actionable Insights</h3>
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-3 bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
-                <AlertTriangle size={18} className="text-[#F59E0B] flex-shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-sm font-semibold text-[#0F172A]">Attendance declining</div>
-                  <div className="text-xs text-[#475569] mt-1">Mechanical department has seen a 2% drop this week.</div>
-                </div>
-              </div>
-              <div className="flex gap-3 bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
-                <TrendingUp size={18} className="text-[#10B981] flex-shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-sm font-semibold text-[#0F172A]">Performance surge</div>
-                  <div className="text-xs text-[#475569] mt-1">Civil department improved average marks by 8%.</div>
-                </div>
-              </div>
-              <div className="flex gap-3 bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
-                <Users size={18} className="text-[#EF4444] flex-shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-sm font-semibold text-[#0F172A]">Intervention required</div>
-                  <div className="text-xs text-[#475569] mt-1">12 students predicted to fail without support.</div>
-                </div>
-              </div>
+
+          {/* Live Insights Panel */}
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-sm flex-1">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-[#0F172A]">Live Insights</h3>
+              <Sparkles size={16} className="text-[#6366F1]" />
             </div>
+            {insightsLoading ? (
+              <div className="flex flex-col gap-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-16 rounded-xl bg-[#F8FAFC] animate-pulse" />
+                ))}
+              </div>
+            ) : insights.length === 0 ? (
+              <div className="text-center py-8 text-[#94A3B8] text-sm">No insights yet. Add data to generate insights.</div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {insights.map((ins: any, i: number) => (
+                  <InsightCard key={i} insight={ins} idx={i} />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#0F172A] mb-6">Quick Actions</h3>
-            <div className="flex flex-col gap-3">
-              <ActionCard title="Start AI Chat" desc="Query your database" icon={MessageSquare} onClick={() => window.location.href = "/chat"} />
-              <ActionCard title="Upload Data" desc="Import student records" icon={Upload} onClick={() => window.location.href = "/upload"} />
-              <ActionCard title="Generate Report" desc="Create PDF summary" icon={FileText} onClick={() => window.location.href = "/reports"} />
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-sm">
+            <h3 className="text-base font-bold text-[#0F172A] mb-3">Quick Actions</h3>
+            <div className="flex flex-col gap-1">
+              <QuickAction href="/chat" icon={MessageSquare} label="AI Assistant" desc="Query your database" color="#6366F1" />
+              <QuickAction href="/upload" icon={Upload} label="Import Data" desc="Upload CSV / Excel" color="#14B8A6" />
+              <QuickAction href="/reports" icon={FileText} label="Generate Report" desc="PDF, DOCX, XLSX" color="#F59E0B" />
+              <QuickAction href="/admin/students/at-risk" icon={AlertTriangle} label="At-Risk Students" desc="View risk dashboard" color="#EF4444" />
+              <QuickAction href="/admin/users" icon={Users} label="Manage Users" desc="Create & edit accounts" color="#8B5CF6" />
             </div>
           </div>
-
-          {/* Recent Activity Timeline */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#0F172A] mb-6">Recent Activity</h3>
-            <div className="relative pl-4 border-l-2 border-[#E2E8F0] flex flex-col gap-6 ml-2">
-              {[
-                { title: "Midterm Report generated", time: "2h ago", icon: FileText, color: "#6366F1" },
-                { title: "CSV Data upload successful", time: "5h ago", icon: Upload, color: "#10B981" },
-                { title: "Performance analysis run", time: "1d ago", icon: Activity, color: "#3B82F6" },
-                { title: "Admin login from new IP", time: "2d ago", icon: Clock, color: "#94A3B8" },
-              ].map((activity, i) => (
-                <div key={i} className="relative">
-                  <div className="absolute -left-[25px] w-3 h-3 rounded-full border-2 border-white" style={{ background: activity.color }} />
-                  <div className="text-sm font-semibold text-[#0F172A] -mt-1.5">{activity.title}</div>
-                  <div className="text-xs font-medium text-[#94A3B8] mt-1">{activity.time}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
   )
 }
+
+// Workaround for import collision — Users vs UserCheck
+const UserCheck_ = Users

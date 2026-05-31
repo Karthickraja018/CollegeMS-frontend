@@ -1,8 +1,13 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Zap, Loader2 } from "lucide-react"
+import { Zap, Loader2, ArrowRight } from "lucide-react"
 import { api } from "@/services/api"
+
+/* Hallmark · component: LoginPage · genre: modern-minimal · theme: Quiet
+ * states: default · hover · focus · active · disabled · loading · error
+ * contrast: pass
+ */
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -28,94 +33,131 @@ export default function LoginPage() {
   }
 
   const fillDemo = (role: string) => {
-    const creds: Record<string, { email: string; password: string }> = {
-      admin: { email: "admin@college.edu", password: "Admin@123" },
-      principal: { email: "principal@college.edu", password: "Principal@123" },
-      hod: { email: "hod.cse@college.edu", password: "Hod@123" },
+    const creds: Record<string, { email: string }> = {
+      admin: { email: "admin@svcet.ac.in" },
+      principal: { email: "principal@svcet.ac.in" },
+      hod: { email: "hod.cse@svcet.ac.in" },
     }
     if (creds[role]) {
       setEmail(creds[role].email)
-      setPassword(creds[role].password)
+      setPassword("demo123")
     }
   }
 
   return (
-    <div className="login-page">
-      <div className="login-card">
-        {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{
-            width: 52, height: 52, borderRadius: 14,
-            background: "linear-gradient(135deg, #6366F1, #14B8A6)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            margin: "0 auto 16px",
-            boxShadow: "0 8px 24px rgba(99,102,241,0.3)",
-          }}>
-            <Zap size={24} color="white" />
-          </div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 6 }}>CollegeMS</h1>
-          <p style={{ fontSize: 13, color: "var(--text-muted)" }}>AI-Powered Management Platform</p>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleLogin}>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6 }}>Email</label>
-            <input
-              id="login-email"
-              className="input"
-              type="email"
-              placeholder="your@college.edu"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-          </div>
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6 }}>Password</label>
-            <input
-              id="login-password"
-              className="input"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
-          </div>
-
-          {error && (
-            <div style={{ padding: "10px 14px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, fontSize: 13, color: "#F87171", marginBottom: 16 }}>
-              {error}
+    <div className="min-h-screen flex w-full bg-background selection:bg-primary/20">
+      {/* Form Side */}
+      <div className="flex-1 flex flex-col justify-center items-center p-8 sm:p-12 lg:p-24 z-10 relative">
+        <div className="w-full max-w-sm mx-auto space-y-10">
+          
+          {/* Header */}
+          <div className="space-y-3">
+            <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center border border-primary/10 shadow-sm mb-6">
+              <Zap className="w-6 h-6 text-primary" />
             </div>
-          )}
-
-          <button id="login-submit" className="btn btn-primary" type="submit" disabled={loading} style={{ width: "100%", justifyContent: "center", padding: "11px" }}>
-            {loading ? <Loader2 size={16} className="animate-spin" /> : null}
-            {loading ? "Signing in…" : "Sign In"}
-          </button>
-        </form>
-
-        {/* Demo credentials */}
-        <div style={{ marginTop: 24, padding: "14px 16px", background: "var(--bg-elevated)", borderRadius: 10, border: "1px solid var(--border)" }}>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            Demo Credentials
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Welcome back</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Sign in to access the College Management Platform workspace.
+            </p>
           </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {["admin", "principal", "hod"].map(role => (
-              <button key={role} onClick={() => fillDemo(role)} style={{
-                background: "var(--bg-card)", border: "1px solid var(--border)",
-                borderRadius: 6, padding: "5px 12px", fontSize: 12,
-                color: "var(--text-secondary)", cursor: "pointer", textTransform: "capitalize",
-                transition: "all 0.15s",
-              }}
-                onMouseEnter={e => { (e.target as any).style.borderColor = "var(--indigo)"; (e.target as any).style.color = "var(--text-primary)" }}
-                onMouseLeave={e => { (e.target as any).style.borderColor = "var(--border)"; (e.target as any).style.color = "var(--text-secondary)" }}>
-                {role.charAt(0).toUpperCase() + role.slice(1)}
-              </button>
-            ))}
+
+          {/* Form */}
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-foreground/80 tracking-wide uppercase" htmlFor="email">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="name@svcet.ac.in"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  className="w-full h-11 px-3 bg-transparent border border-input rounded-lg text-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-foreground/80 tracking-wide uppercase" htmlFor="password">
+                    Password
+                  </label>
+                </div>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="w-full h-11 px-3 bg-transparent border border-input rounded-lg text-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive font-medium flex items-center">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-11 bg-primary text-primary-foreground font-medium rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-70 disabled:cursor-not-allowed group"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Demo Helpers */}
+          <div className="pt-8 mt-8 border-t border-border/50">
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-4">
+              Demo Credentials
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {["admin", "principal", "hod"].map(role => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => fillDemo(role)}
+                  className="h-9 px-3 rounded-md bg-secondary/50 text-secondary-foreground text-xs font-medium border border-border/50 hover:border-primary/30 hover:bg-secondary transition-all capitalize"
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Brand Side (Desktop) */}
+      <div className="hidden lg:flex flex-1 relative bg-zinc-950 overflow-hidden border-l border-border/10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-950 to-zinc-950" />
+        
+        {/* Abstract Pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+
+        <div className="relative z-10 p-24 flex flex-col justify-between h-full w-full max-w-2xl text-zinc-400">
+          <div className="space-y-4 mt-auto">
+            <blockquote className="text-2xl font-light text-zinc-100 leading-snug">
+              "A comprehensive operating system for modern academic institutions. Every workflow, streamlined."
+            </blockquote>
+            <div className="flex items-center gap-3 text-sm">
+              <div className="w-8 h-[1px] bg-zinc-700" />
+              <span>CollegeMS Platform v1.0</span>
+            </div>
           </div>
         </div>
       </div>
