@@ -166,7 +166,7 @@ export function useAcademicHealth() {
 export function useDepartmentRankings() {
   return useQuery<DepartmentRanking[]>({
     queryKey: dashboardKeys.rankings,
-    queryFn: () => api.get("/dashboard/department-rankings").then((r) => r.data),
+    queryFn: () => api.get("/dashboard/department-rankings").then((r) => r.data.rankings ?? []),
     staleTime: 120_000,
   })
 }

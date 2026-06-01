@@ -4,7 +4,7 @@ import { useUserStore } from "@/store"
 import { AdminDashboard } from "@/components/dashboards/AdminDashboard"
 import { PrincipalDashboard } from "@/components/dashboards/PrincipalDashboard"
 import { HodDashboard } from "@/components/dashboards/HodDashboard"
-import { FacultyDashboard } from "@/components/dashboards/FacultyDashboard"
+import { FacultyDashboard } from "@/components/dashboards/FacultyDashboard" // trigger rebuild
 
 /**
  * Role Router — shows the correct dashboard based on user role.
