@@ -169,10 +169,10 @@ export default function DashboardPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-[#0F172A] tracking-tight">
-              System Dashboard
+              Institutional Pulse
             </h1>
             <p className="text-sm text-[#94A3B8] mt-0.5 font-medium">
-              Real-time overview of all college operations
+              Real-time overview of academic intelligence and institutional performance
             </p>
           </div>
           <button
@@ -335,11 +335,11 @@ export default function DashboardPage() {
           <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-sm">
             <h3 className="text-base font-bold text-[#0F172A] mb-3">Quick Actions</h3>
             <div className="flex flex-col gap-1">
-              <QuickAction href="/chat" icon={MessageSquare} label="AI Assistant" desc="Query your database" color="#6366F1" />
-              <QuickAction href="/upload" icon={Upload} label="Import Data" desc="Upload CSV / Excel" color="#14B8A6" />
-              <QuickAction href="/reports" icon={FileText} label="Generate Report" desc="PDF, DOCX, XLSX" color="#F59E0B" />
-              <QuickAction href="/admin/students/at-risk" icon={AlertTriangle} label="At-Risk Students" desc="View risk dashboard" color="#EF4444" />
-              <QuickAction href="/admin/users" icon={Users} label="Manage Users" desc="Create & edit accounts" color="#8B5CF6" />
+              <QuickAction href="/chat" icon={MessageSquare} label="AI Copilot" desc="Query your database" color="#6366F1" />
+              <QuickAction href="/sync" icon={Upload} label="Import Data" desc="Upload CSV / Excel" color="#14B8A6" />
+              <QuickAction href="/accreditation" icon={FileText} label="Accreditation & Reports" desc="Generate AI-driven reports" color="#F59E0B" />
+              <QuickAction href="/intelligence/students" icon={AlertTriangle} label="Student Intelligence" desc="View risk dashboard" color="#EF4444" />
+              <QuickAction href="/admin/settings/college" icon={Users} label="College Settings" desc="Update institutional details" color="#8B5CF6" />
             </div>
           </div>
         </div>

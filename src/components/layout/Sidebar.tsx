@@ -38,103 +38,32 @@ type NavItem = {
 
 const navGroups: { title: string; items: NavItem[] }[] = [
   {
-    title: "Overview",
+    title: "Intelligence",
     items: [
-      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/chat", label: "AI Assistant", icon: MessageSquare },
-    ],
-  },
-  {
-    title: "Academic",
-    items: [
+      { href: "/chat", label: "AI Copilot", icon: MessageSquare },
+      { href: "/dashboard", label: "Institutional Pulse", icon: LayoutDashboard },
       {
-        href: "/admin/academic",
-        label: "Academic Setup",
-        icon: BookOpen,
-        children: [
-          { href: "/admin/academic/years", label: "Academic Years", icon: Calendar },
-          { href: "/admin/academic/departments", label: "Departments", icon: Building2 },
-          { href: "/admin/academic/programs", label: "Programs", icon: GraduationCap },
-          { href: "/admin/academic/semesters", label: "Semesters", icon: Calendar },
-          { href: "/admin/academic/subjects", label: "Subjects", icon: BookOpen },
-        ],
-      },
-    ],
-  },
-  {
-    title: "People",
-    items: [
-      { href: "/admin/users", label: "Users", icon: Users },
-      {
-        href: "/admin/students",
-        label: "Students",
+        href: "/intelligence/students",
+        label: "Student Intelligence",
         icon: GraduationCap,
-        children: [
-          { href: "/admin/students", label: "All Students", icon: GraduationCap },
-          { href: "/admin/students/at-risk", label: "At-Risk Students", icon: AlertTriangle },
-        ],
-      },
-      { href: "/admin/faculty", label: "Faculty", icon: UserCheck },
-    ],
-  },
-  {
-    title: "Academics",
-    items: [
-      {
-        href: "/admin/attendance",
-        label: "Attendance",
-        icon: ClipboardList,
-        children: [
-          { href: "/admin/attendance/overview", label: "Overview", icon: BarChart3 },
-          { href: "/admin/attendance/defaulters", label: "Defaulters", icon: AlertTriangle },
-        ],
       },
       {
-        href: "/admin/examinations",
-        label: "Examinations",
-        icon: FileText,
-        children: [
-          { href: "/admin/examinations/schedules", label: "Schedules", icon: Calendar },
-          { href: "/admin/examinations/marks", label: "Marks", icon: ClipboardList },
-          { href: "/admin/examinations/results", label: "Results", icon: BarChart3 },
-        ],
+        href: "/intelligence/departments",
+        label: "Department Intelligence",
+        icon: Building2,
       },
     ],
   },
   {
     title: "Operations",
     items: [
-      { href: "/analytics", label: "Analytics", icon: BarChart3 },
-      {
-        href: "/admin/finance",
-        label: "Finance",
-        icon: DollarSign,
-        children: [
-          { href: "/admin/finance/structures", label: "Fee Structures", icon: FileText },
-          { href: "/admin/finance/accounts", label: "Accounts", icon: DollarSign },
-          { href: "/admin/finance/dashboard", label: "Revenue", icon: BarChart3 },
-        ],
-      },
-      {
-        href: "/admin/placements",
-        label: "Placements",
-        icon: Briefcase,
-        children: [
-          { href: "/admin/placements/drives", label: "Drives", icon: Briefcase },
-          { href: "/admin/placements/applications", label: "Applications", icon: ClipboardList },
-          { href: "/admin/placements/analytics", label: "Analytics", icon: BarChart3 },
-        ],
-      },
-      { href: "/admin/reports", label: "Reports", icon: FileText },
-      { href: "/admin/import", label: "Data Import", icon: Upload },
+      { href: "/accreditation", label: "Accreditation & Reports", icon: FileText },
+      { href: "/sync", label: "Data Sync Center", icon: Upload },
     ],
   },
   {
     title: "System",
     items: [
-      { href: "/admin/notifications", label: "Notifications", icon: Bell },
-      { href: "/admin/audit-logs", label: "Audit Logs", icon: ScrollText },
-      { href: "/admin/ai-operations", label: "AI Operations", icon: Cpu },
       { href: "/admin/settings/college", label: "Settings", icon: Settings },
     ],
   },
