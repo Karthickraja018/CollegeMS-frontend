@@ -35,6 +35,8 @@ interface ChatState {
   toggleArtifactDrawer: () => void
   
   // Conversation State
+  sessionKey: string | null
+  setSessionKey: (key: string | null) => void
   messages: Message[]
   setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void
   addMessage: (message: Message) => void
@@ -62,6 +64,8 @@ export const useChatStore = create<ChatState>((set) => ({
   setArtifactDrawerOpen: (isOpen) => set({ isArtifactDrawerOpen: isOpen }),
   toggleArtifactDrawer: () => set((state) => ({ isArtifactDrawerOpen: !state.isArtifactDrawerOpen })),
   
+  sessionKey: null,
+  setSessionKey: (sessionKey) => set({ sessionKey }),
   messages: [],
   setMessages: (messages) => set((state) => ({
     messages: typeof messages === 'function' ? messages(state.messages) : messages
@@ -70,7 +74,7 @@ export const useChatStore = create<ChatState>((set) => ({
   updateMessage: (id, updates) => set((state) => ({
     messages: state.messages.map((m) => m.id === id ? { ...m, ...updates } : m)
   })),
-  clearMessages: () => set({ messages: [] }),
+  clearMessages: () => set({ messages: [], sessionKey: null }),
   
   isLoading: false,
   setIsLoading: (isLoading) => set({ isLoading }),

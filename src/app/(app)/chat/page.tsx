@@ -43,7 +43,8 @@ export default function ChatPage() {
     messages, addMessage, updateMessage, 
     input, setInput, 
     isLoading, setIsLoading,
-    setActiveAgent, setAgentPipeline
+    setActiveAgent, setAgentPipeline,
+    sessionKey, setSessionKey
   } = useChatStore()
   
   const router = useRouter()
@@ -74,6 +75,12 @@ export default function ChatPage() {
 
     let aborted = false
 
+    let currentSessionKey = sessionKey
+    if (!currentSessionKey) {
+      currentSessionKey = crypto.randomUUID()
+      setSessionKey(currentSessionKey)
+    }
+
     try {
       const response = await fetch(`${API_URL}/chat/stream`, {
         method: "POST",
@@ -81,7 +88,11 @@ export default function ChatPage() {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ query, conversation_history: messages.slice(-10) }),
+        body: JSON.stringify({ 
+          query, 
+          conversation_history: messages.slice(-10),
+          session_key: currentSessionKey
+        }),
       })
 
       if (!response.ok) {
