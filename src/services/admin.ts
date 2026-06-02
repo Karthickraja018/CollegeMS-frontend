@@ -155,40 +155,6 @@ export const examsApi = {
     api.get("/admin/exams/results/analysis", { params: { semester_id, ...params } }).then((r) => r.data),
 }
 
-// ─── Phase 2: Finance ─────────────────────────────────────────────────────────
-
-export const financeApi = {
-  listStructures: (params?: { program_id?: number; academic_year?: string }) =>
-    api.get("/admin/finance/structures", { params }).then((r) => r.data),
-  createStructure: (data: any) => api.post("/admin/finance/structures", data).then((r) => r.data),
-  updateStructure: (id: number, data: any) => api.patch(`/admin/finance/structures/${id}`, data).then((r) => r.data),
-  deleteStructure: (id: number) => api.delete(`/admin/finance/structures/${id}`),
-  listAccounts: (params?: { status?: string; academic_year?: string; department_id?: number; search?: string; page?: number; page_size?: number }) =>
-    api.get("/admin/finance/accounts", { params }).then((r) => r.data),
-  updateAccount: (id: number, data: any) => api.patch(`/admin/finance/accounts/${id}`, data).then((r) => r.data),
-  listTransactions: (params?: { fee_account_id?: number; student_id?: number; mode?: string; date_from?: string; date_to?: string; page?: number; page_size?: number }) =>
-    api.get("/admin/finance/transactions", { params }).then((r) => r.data),
-  recordPayment: (data: any) => api.post("/admin/finance/transactions", data).then((r) => r.data),
-  getDashboard: (academic_year?: string) =>
-    api.get("/admin/finance/dashboard", { params: { academic_year } }).then((r) => r.data),
-  getOverdue: () => api.get("/admin/finance/overdue").then((r) => r.data),
-}
-
-// ─── Phase 2: Placements ──────────────────────────────────────────────────────
-
-export const placementsApi = {
-  listDrives: (params?: { status?: string; drive_type?: string; search?: string; page?: number; page_size?: number }) =>
-    api.get("/admin/placements/drives", { params }).then((r) => r.data),
-  createDrive: (data: any) => api.post("/admin/placements/drives", data).then((r) => r.data),
-  updateDrive: (id: number, data: any) => api.patch(`/admin/placements/drives/${id}`, data).then((r) => r.data),
-  deleteDrive: (id: number) => api.delete(`/admin/placements/drives/${id}`),
-  listApplications: (params?: { drive_id?: number; student_id?: number; status?: string; page?: number; page_size?: number }) =>
-    api.get("/admin/placements/applications", { params }).then((r) => r.data),
-  updateApplicationStatus: (id: number, data: { status: string; round_cleared?: number; notes?: string }) =>
-    api.patch(`/admin/placements/applications/${id}/status`, data).then((r) => r.data),
-  getAnalytics: (academic_year?: string) =>
-    api.get("/admin/placements/analytics", { params: { academic_year } }).then((r) => r.data),
-}
 
 // ─── Phase 2: Notifications ────────────────────────────────────────────────────
 
@@ -236,15 +202,3 @@ export const settingsApi = {
   getNaac: () => api.get("/admin/settings/naac").then((r) => r.data),
 }
 
-// ─── Phase 4: Import ──────────────────────────────────────────────────────────
-
-export const importApi = {
-  importStudents: (formData: FormData) =>
-    api.post("/admin/import/students", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    }).then((r) => r.data),
-  importFaculty: (formData: FormData) =>
-    api.post("/admin/import/faculty", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    }).then((r) => r.data),
-}
