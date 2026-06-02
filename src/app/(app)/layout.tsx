@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Providers from "@/components/Providers"
 import Sidebar from "@/components/layout/Sidebar"
-import TopNav from "@/components/layout/TopNav"
 import { useUserStore } from "@/store"
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -67,7 +66,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="app-layout">
         <Sidebar />
         <div className="main-wrapper">
-          <TopNav />
           <main className="main-content">
             {children}
           </main>
