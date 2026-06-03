@@ -142,7 +142,29 @@ export default function ChatPage() {
                   messages: state.messages.map(m => m.id === assistantId ? { ...m, content: m.content + event.content } : m)
                 }
               })
+            } else if (event.type === 'table') {
+              const rows = event.data || []
+              updateMessage(assistantId, {
+                tableData: {
+                  columns: rows.length > 0 ? Object.keys(rows[0]) : [],
+                  rows: rows,
+                  row_count: rows.length
+                }
+              })
+            } else if (event.type === 'insights') {
+              updateMessage(assistantId, { insights: event.data })
+            } else if (event.type === 'recommendations') {
+              updateMessage(assistantId, { actions: event.data })
+            } else if (event.type === 'chart') {
+              updateMessage(assistantId, { chartSpec: event.spec })
+            } else if (event.type === 'report') {
+              updateMessage(assistantId, { reportUrl: event.url })
+            } else if (event.type === 'risk') {
+              updateMessage(assistantId, { risk_analysis: event.data })
+            } else if (event.type === 'analytics') {
+              updateMessage(assistantId, { analytics: event.data })
             } else if (event.type === 'analysis') {
+              // Fallback for V1
               updateMessage(assistantId, {
                 content: event.summary,
                 insights: event.insights,

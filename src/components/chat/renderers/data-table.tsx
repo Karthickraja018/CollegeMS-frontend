@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { ArrowDownAZ, ArrowUpAZ, ChevronLeft, ChevronRight, Search } from 'lucide-react'
 
@@ -11,10 +11,41 @@ interface DataTableProps {
   }
 }
 
+const formatValue = (val: any) => {
+  if (typeof val === 'number') {
+    return Number.isInteger(val) ? val : Number(val.toFixed(2))
+  }
+  if (typeof val === 'string') {
+    // try to parse if it's a long decimal
+    if (/^-?\d+\.\d{3,}$/.test(val)) {
+      return Number(parseFloat(val).toFixed(2))
+    }
+  }
+  return String(val ?? '')
+}
+
 export function DataTable({ data }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null)
   
+  // Calculate column widths based on max content length
+  const columnWidths = useMemo(() => {
+    const widths: Record<string, number> = {}
+    if (!data || !data.columns) return widths
+    data.columns.forEach(col => {
+      let maxLen = col.length
+      data.rows.forEach(row => {
+        const valStr = String(formatValue(row[col]))
+        if (valStr.length > maxLen) {
+          maxLen = valStr.length
+        }
+      })
+      // Approximate pixel width: ~8px per char + 32px padding, min 120, max 400
+      widths[col] = Math.max(120, Math.min(400, maxLen * 8 + 32))
+    })
+    return widths
+  }, [data])
+
   if (!data || !data.rows || data.rows.length === 0) {
     return (
       <div className="mt-4 p-6 rounded-xl border border-dashed border-[var(--border)] text-center text-[var(--text-muted)] text-sm bg-[var(--bg-surface)]">
@@ -61,6 +92,8 @@ export function DataTable({ data }: DataTableProps) {
     setSortConfig({ key: col, direction })
   }
 
+  const totalTableWidth = data.columns.reduce((acc, col) => acc + (columnWidths[col] || 120), 0)
+
   return (
     <div className="mt-4 flex flex-col border border-[var(--border)] rounded-xl bg-[var(--bg-card)] shadow-sm overflow-hidden w-full max-w-full">
       
@@ -87,54 +120,55 @@ export function DataTable({ data }: DataTableProps) {
         ref={parentRef} 
         className="w-full max-h-[400px] overflow-auto custom-scrollbar"
       >
-        <div 
-          style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}
-        >
-          <table className="w-full text-left border-collapse" style={{ minWidth: data.columns.length * 120 }}>
-            <thead className="sticky top-0 bg-[var(--bg-elevated)] z-10 shadow-sm text-xs uppercase tracking-wider text-[var(--text-secondary)] font-medium">
-              <tr>
-                {data.columns.map(col => (
-                  <th 
-                    key={col} 
-                    className="px-4 py-3 border-b border-[var(--border)] cursor-pointer hover:bg-[var(--bg-surface)] transition-colors whitespace-nowrap"
-                    onClick={() => handleSort(col)}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      {col.replace(/_/g, ' ')}
-                      {sortConfig?.key === col && (
-                        sortConfig.direction === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />
-                      )}
+        <div className="w-full text-left bg-[var(--bg-card)] block" style={{ minWidth: totalTableWidth }}>
+          <div className="sticky top-0 bg-[var(--bg-elevated)] z-10 shadow-sm text-xs uppercase tracking-wider text-[var(--text-secondary)] font-medium flex border-b border-[var(--border)]">
+            {data.columns.map(col => (
+              <div 
+                key={col} 
+                style={{ width: columnWidths[col] }}
+                className="px-4 py-3 cursor-pointer hover:bg-[var(--bg-surface)] transition-colors flex-shrink-0 flex items-center gap-1.5 whitespace-nowrap"
+                onClick={() => handleSort(col)}
+              >
+                {col.replace(/_/g, ' ')}
+                {sortConfig?.key === col && (
+                  sortConfig.direction === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div 
+            className="relative w-full"
+            style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const row = processedRows[virtualRow.index]
+              return (
+                <div 
+                  key={virtualRow.index}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                  className="flex border-b border-[var(--border)] hover:bg-[var(--bg-surface)]/50 transition-colors group"
+                >
+                  {data.columns.map(col => (
+                    <div 
+                      key={col} 
+                      style={{ width: columnWidths[col] }}
+                      className="px-4 py-2.5 text-sm text-[var(--text-primary)] truncate flex-shrink-0" 
+                      title={String(row[col] ?? '')}
+                    >
+                      {formatValue(row[col])}
                     </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                const row = processedRows[virtualRow.index]
-                return (
-                  <tr 
-                    key={virtualRow.index}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: `${virtualRow.size}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                    className="border-b border-[var(--border)] hover:bg-[var(--bg-surface)]/50 transition-colors group"
-                  >
-                    {data.columns.map(col => (
-                      <td key={col} className="px-4 py-2.5 text-sm text-[var(--text-primary)] truncate max-w-[200px]" title={String(row[col] ?? '')}>
-                        {String(row[col] ?? '')}
-                      </td>
-                    ))}
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                  ))}
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
     </div>
