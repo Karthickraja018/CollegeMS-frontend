@@ -46,7 +46,7 @@ export function ExecutionTimeline({ steps }: ExecutionTimelineProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="w-1.5 h-1.5 rounded-full bg-indigo-500 ml-auto"
-              transition={{ repeat: Infinity, duration: 0.8, direction: 'alternate' }}
+              transition={{ repeat: Infinity, duration: 0.8, repeatType: 'reverse' }}
             />
           )}
         </div>

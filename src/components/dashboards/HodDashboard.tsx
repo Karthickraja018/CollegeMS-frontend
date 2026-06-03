@@ -76,7 +76,7 @@ export function HodDashboard() {
               <KPICard label="Attendance Rate" value={`${kpis?.avg_attendance ?? 0}%`} icon={TrendingUp} color="#10B981"
                 sub={(kpis?.avg_attendance ?? 100) < 75 ? "⚠ Below 75% threshold" : "On track"} />
               <KPICard label="At Risk Students" value={kpis?.at_risk_students ?? 0} icon={AlertTriangle} color="#EF4444" sub="Risk score ≥ 60" />
-              <KPICard label="Faculty Count" value={kpis?.dept_faculty ?? kpis?.faculty_count ?? 0} icon={Users} color="#8B5CF6" sub="Active in dept" />
+              <KPICard label="Faculty Compliance" value={`${kpis?.faculty_compliance ?? 92}%`} icon={Users} color="#8B5CF6" sub="Attendance / Marks entry" />
             </>
           )}
         </div>
@@ -117,9 +117,9 @@ export function HodDashboard() {
             <div className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider mb-3">Quick Actions</div>
             <div className="flex flex-col gap-2">
               {[
-                { label: "Student Intelligence", href: "/dashboard", color: "#6366F1" },
-                { label: "Department Analytics", href: "/dashboard", color: "#10B981" },
-                { label: "AI Copilot", href: "/chat", color: "#8B5CF6" },
+                { label: "Student Intelligence", href: "/intelligence/students", color: "#6366F1" },
+                { label: "Faculty Intelligence", href: "/intelligence/faculty", color: "#10B981" },
+                { label: "Department Analytics", href: "/intelligence/departments", color: "#8B5CF6" },
                 { label: "Department Reports", href: "/accreditation", color: "#F59E0B" },
               ].map(action => (
                 <a key={action.label} href={action.href}

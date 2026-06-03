@@ -6,6 +6,7 @@ export const deptKeys = {
   overview: (id: number) => ["departments", "overview", id] as const,
   subjects: (id: number, sem?: number) => ["departments", "subjects", id, sem] as const,
   faculty: (id: number) => ["departments", "faculty", id] as const,
+  facultyProfile: (deptId: number, facultyId: number) => ["departments", "faculty-profile", deptId, facultyId] as const,
   trends: (id: number) => ["departments", "trends", id] as const,
   risk: (id: number) => ["departments", "risk", id] as const,
   compare: ["departments", "compare"] as const,
@@ -77,5 +78,14 @@ export function useDepartmentComparison() {
     queryKey: deptKeys.compare,
     queryFn: () => api.get("/department-intelligence/compare").then((r) => r.data),
     staleTime: 120_000,
+  })
+}
+
+export function useFacultyProfile(deptId: number | null, facultyId: number | null) {
+  return useQuery({
+    queryKey: deptKeys.facultyProfile(deptId!, facultyId!),
+    queryFn: () => api.get(`/department-intelligence/${deptId}/faculty/${facultyId}/profile`).then(r => r.data),
+    enabled: deptId != null && facultyId != null,
+    staleTime: 60_000,
   })
 }

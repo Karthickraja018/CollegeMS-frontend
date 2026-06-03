@@ -115,6 +115,7 @@ function getNavGroups(role: UserRole | undefined): NavGroup[] {
           title: "Analytics",
           items: [
             { href: "/intelligence/students", label: "Student Intelligence", icon: GraduationCap },
+            { href: "/intelligence/faculty", label: "Faculty Intelligence", icon: Users },
             { href: "/intelligence/departments", label: "Department Analytics", icon: Building2 },
           ],
         },
