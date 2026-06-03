@@ -21,6 +21,27 @@ export const useChatHistory = () => {
   })
 }
 
+// Fetch single session
+export const useChatSession = (sessionKey: string | null) => {
+  return useQuery({
+    queryKey: ['chatSession', sessionKey],
+    queryFn: async () => {
+      if (!sessionKey) return []
+      const token = localStorage.getItem('access_token')
+      const response = await fetch(`${API_URL}/chat/history/${sessionKey}`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        }
+      })
+      if (!response.ok) return []
+      const data = await response.json()
+      return data.messages || []
+    },
+    enabled: !!sessionKey,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 // Generate Excel Export stub (Backend)
 export const useExportExcel = () => {
   return useMutation({

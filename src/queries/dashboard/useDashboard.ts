@@ -43,8 +43,10 @@ export interface DashboardKPIs {
   total_faculty?: number
   total_reports?: number
   total_ai_queries?: number
+  ai_queries_today?: number
   active_semesters?: number
   total_programs?: number
+  departments_below_target?: number
   // Principal / HOD / Faculty shared
   avg_attendance?: number
   pass_rate?: number
@@ -63,6 +65,13 @@ export interface DashboardKPIs {
   avg_marks?: number
   // Shared AHS
   academic_health?: AcademicHealthScore
+  trends?: {
+    academic_health: number
+    attendance: number
+    pass_percentage: number
+    at_risk: number
+    ai_queries: number
+  }
 }
 
 export interface InsightRecommendation {
@@ -136,7 +145,8 @@ export function useDashboardKPIs() {
   return useQuery<DashboardKPIs>({
     queryKey: dashboardKeys.kpis,
     queryFn: () => api.get("/dashboard/kpis").then((r) => r.data),
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
     retry: 2,
   })
@@ -147,7 +157,8 @@ export function useDashboardInsights() {
   return useQuery<DashboardInsights>({
     queryKey: dashboardKeys.insights,
     queryFn: () => api.get("/dashboard/insights").then((r) => r.data),
-    staleTime: 120_000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
     retry: 1,
   })
@@ -179,7 +190,9 @@ export function useAttendanceTrend(months = 6, departmentId?: number) {
       api
         .get("/analytics/attendance-trend", { params: { months, department_id: departmentId } })
         .then((r) => r.data),
-    staleTime: 120_000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   })
 }
 
@@ -188,7 +201,9 @@ export function useDeptPerformance() {
   return useQuery<DeptPerformance[]>({
     queryKey: dashboardKeys.deptPerformance,
     queryFn: () => api.get("/analytics/department-performance").then((r) => r.data),
-    staleTime: 120_000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   })
 }
 

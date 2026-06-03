@@ -53,7 +53,6 @@ function getNavGroups(role: UserRole | undefined): NavGroup[] {
           title: "Management",
           items: [
             { href: "/admin/users", label: "Users", icon: Users },
-            { href: "/admin/academic", label: "Academic Setup", icon: BookOpen },
             { href: "/sync", label: "Data Sync", icon: Upload },
           ],
         },
@@ -146,11 +145,11 @@ function getNavGroups(role: UserRole | undefined): NavGroup[] {
 // ─── Role badge config ────────────────────────────────────────────────────────
 
 const ROLE_BADGE: Record<string, { label: string; colors: string }> = {
-  admin:        { label: "Admin",     colors: "bg-purple-100 text-purple-700" },
-  college_admin:{ label: "Admin",     colors: "bg-purple-100 text-purple-700" },
-  principal:    { label: "Principal", colors: "bg-blue-100 text-blue-700" },
-  hod:          { label: "HOD",       colors: "bg-teal-100 text-teal-700" },
-  faculty:      { label: "Faculty",   colors: "bg-green-100 text-green-700" },
+  admin:        { label: "Admin",     colors: "bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0]" },
+  college_admin:{ label: "Admin",     colors: "bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0]" },
+  principal:    { label: "Principal", colors: "bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0]" },
+  hod:          { label: "HOD",       colors: "bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0]" },
+  faculty:      { label: "Faculty",   colors: "bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0]" },
 }
 
 // ─── NavLink ─────────────────────────────────────────────────────────────────
@@ -177,7 +176,7 @@ function NavLink({ item, depth = 0 }: { item: NavItem; depth?: number }) {
           onClick={() => setOpen(!open)}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
             isParentActive
-              ? "text-[#6366F1] bg-[#6366F1]/10"
+              ? "text-[#4F46E5] bg-[#EEF2FF]"
               : "text-[#475569] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
           }`}
           style={{ paddingLeft: `${12 + depth * 12}px` }}
@@ -214,7 +213,7 @@ function NavLink({ item, depth = 0 }: { item: NavItem; depth?: number }) {
       href={item.href}
       className={`relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
         isActive
-          ? "text-[#6366F1] bg-[#6366F1]/10"
+          ? "text-[#4F46E5] bg-[#EEF2FF]"
           : "text-[#475569] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
       }`}
       style={{ paddingLeft: `${12 + depth * 12}px` }}
@@ -222,7 +221,7 @@ function NavLink({ item, depth = 0 }: { item: NavItem; depth?: number }) {
       {isActive && (
         <motion.div
           layoutId="active-nav"
-          className="absolute left-0 top-[15%] bottom-[15%] w-1 bg-[#6366F1] rounded-r-md shadow-sm"
+          className="absolute left-0 top-[15%] bottom-[15%] w-1 bg-[#4F46E5] rounded-r-md shadow-sm"
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
       )}
@@ -303,7 +302,7 @@ export default function Sidebar() {
       {/* Logo / Workspace */}
       <div className="p-4 border-b border-[#E2E8F0]">
         <div className="flex items-center gap-3 p-2 hover:bg-[#F1F5F9] rounded-lg cursor-pointer transition-colors">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm shadow-sm flex-shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-[#4F46E5] flex items-center justify-center text-white font-bold text-sm shadow-sm flex-shrink-0">
             C
           </div>
           <div className="flex-1 min-w-0">
@@ -339,7 +338,7 @@ export default function Sidebar() {
       {/* User Profile Footer */}
       <div className="p-3 border-t border-[#E2E8F0]">
         <div className="flex items-center gap-3 p-2 hover:bg-[#F1F5F9] rounded-lg transition-colors group">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#4F46E5] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
             {initials}
           </div>
           <div className="flex-1 min-w-0">

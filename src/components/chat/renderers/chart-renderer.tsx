@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
@@ -12,6 +12,8 @@ interface ChartRendererProps {
 }
 
 export function ChartRenderer({ spec }: ChartRendererProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
   if (!spec) return null
   const { chartType, data, xAxis, yAxis, series, title } = spec
 
@@ -26,8 +28,8 @@ export function ChartRenderer({ spec }: ChartRendererProps) {
         return (
           <BarChart {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
-            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
-            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} />
+            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} height={xAxis?.label ? 50 : 30} label={xAxis?.label ? { value: xAxis.label, position: 'insideBottom', offset: -5, fill: "var(--text-muted)", fontSize: 13 } : undefined} />
+            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} width={yAxis?.label ? 60 : 40} label={yAxis?.label ? { value: yAxis.label, angle: -90, position: 'insideLeft', offset: 0, style: { textAnchor: 'middle', fill: "var(--text-muted)", fontSize: 13 } } : undefined} />
             <Tooltip cursor={{ fill: "var(--bg-elevated)", opacity: 0.5 }} contentStyle={{ borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-card)' }} />
             <Legend wrapperStyle={{ fontSize: 13, paddingTop: 20 }} />
             {(series || []).map((s: any, i: number) => (
@@ -39,8 +41,8 @@ export function ChartRenderer({ spec }: ChartRendererProps) {
         return (
           <LineChart {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
-            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
-            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} />
+            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} height={xAxis?.label ? 50 : 30} label={xAxis?.label ? { value: xAxis.label, position: 'insideBottom', offset: -5, fill: "var(--text-muted)", fontSize: 13 } : undefined} />
+            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} width={yAxis?.label ? 60 : 40} label={yAxis?.label ? { value: yAxis.label, angle: -90, position: 'insideLeft', offset: 0, style: { textAnchor: 'middle', fill: "var(--text-muted)", fontSize: 13 } } : undefined} />
             <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-card)' }} />
             <Legend wrapperStyle={{ fontSize: 13, paddingTop: 20 }} />
             {(series || []).map((s: any, i: number) => (
@@ -60,8 +62,8 @@ export function ChartRenderer({ spec }: ChartRendererProps) {
               ))}
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
-            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
-            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} />
+            <XAxis dataKey={xAxis?.dataKey} tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} dy={10} height={xAxis?.label ? 50 : 30} label={xAxis?.label ? { value: xAxis.label, position: 'insideBottom', offset: -5, fill: "var(--text-muted)", fontSize: 13 } : undefined} />
+            <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} width={yAxis?.label ? 60 : 40} label={yAxis?.label ? { value: yAxis.label, angle: -90, position: 'insideLeft', offset: 0, style: { textAnchor: 'middle', fill: "var(--text-muted)", fontSize: 13 } } : undefined} />
             <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-card)' }} />
             <Legend wrapperStyle={{ fontSize: 13, paddingTop: 20 }} />
             {(series || []).map((s: any, i: number) => (
@@ -91,12 +93,53 @@ export function ChartRenderer({ spec }: ChartRendererProps) {
     }
   }
 
+  const handleDownload = () => {
+    if (!containerRef.current) return
+    const svgElement = containerRef.current.querySelector('.recharts-wrapper svg')
+    if (!svgElement) return
+
+    const svgData = new XMLSerializer().serializeToString(svgElement)
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext("2d")
+    const img = new Image()
+    
+    let svgString = svgData
+    if (!svgString.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+        svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"')
+    }
+    const svgBase64 = btoa(unescape(encodeURIComponent(svgString)))
+    const url = `data:image/svg+xml;base64,${svgBase64}`
+    
+    img.onload = () => {
+      const scale = 2
+      const width = svgElement.clientWidth || 800
+      const height = svgElement.clientHeight || 320
+      
+      canvas.width = width * scale
+      canvas.height = height * scale
+      if (ctx) {
+          ctx.scale(scale, scale)
+          ctx.fillStyle = "white"
+          ctx.fillRect(0, 0, width, height)
+          ctx.drawImage(img, 0, 0)
+          const pngUrl = canvas.toDataURL("image/png")
+          const link = document.createElement('a')
+          link.href = pngUrl
+          link.download = `${title || 'chart'}.png`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+      }
+    }
+    img.src = url
+  }
+
   return (
-    <div className="mt-4 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-sm p-5 relative group w-full">
+    <div ref={containerRef} className="mt-4 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-sm p-5 relative group w-full">
       <div className="flex items-center justify-between mb-6">
         <h3 className="font-semibold text-[var(--text-primary)] tracking-tight">{title || 'Data Visualization'}</h3>
         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-md transition-colors" title="Download PNG">
+          <button onClick={handleDownload} className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-md transition-colors" title="Download PNG">
             <Download size={16} />
           </button>
           <button className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-md transition-colors" title="Full Screen">

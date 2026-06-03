@@ -26,37 +26,13 @@ interface AcademicHealthScoreProps {
 // ─── Color Map ────────────────────────────────────────────────────────────────
 
 const COLOR_MAP: Record<string, { ring: string; text: string; bg: string; bar: string; glow: string }> = {
-  green: {
-    ring: "#10B981",
-    text: "#059669",
-    bg: "rgba(16,185,129,0.08)",
-    bar: "#10B981",
-    glow: "rgba(16,185,129,0.25)",
-  },
-  blue: {
-    ring: "#6366F1",
-    text: "#4F46E5",
-    bg: "rgba(99,102,241,0.08)",
-    bar: "#6366F1",
-    glow: "rgba(99,102,241,0.25)",
-  },
-  amber: {
-    ring: "#F59E0B",
-    text: "#D97706",
-    bg: "rgba(245,158,11,0.08)",
-    bar: "#F59E0B",
-    glow: "rgba(245,158,11,0.25)",
-  },
-  red: {
-    ring: "#EF4444",
-    text: "#DC2626",
-    bg: "rgba(239,68,68,0.08)",
-    bar: "#EF4444",
-    glow: "rgba(239,68,68,0.25)",
-  },
+  green: { ring: "#4F46E5", text: "#4F46E5", bg: "#EEF2FF", bar: "#4F46E5", glow: "transparent" },
+  blue: { ring: "#4F46E5", text: "#4F46E5", bg: "#EEF2FF", bar: "#4F46E5", glow: "transparent" },
+  amber: { ring: "#4F46E5", text: "#4F46E5", bg: "#EEF2FF", bar: "#4F46E5", glow: "transparent" },
+  red: { ring: "#3730A3", text: "#3730A3", bg: "#EEF2FF", bar: "#3730A3", glow: "transparent" },
 }
 
-const COMPONENT_COLORS = ["#6366F1", "#10B981", "#F59E0B", "#14B8A6", "#8B5CF6"]
+const COMPONENT_COLORS = ["#4F46E5", "rgba(79, 70, 229, 0.8)", "rgba(79, 70, 229, 0.6)", "rgba(79, 70, 229, 0.4)", "rgba(79, 70, 229, 0.2)"]
 
 // ─── Circular Ring SVG ────────────────────────────────────────────────────────
 
@@ -98,7 +74,7 @@ function ScoreRing({
         initial={{ strokeDashoffset: circumference }}
         animate={{ strokeDashoffset: offset }}
         transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-        style={{ filter: `drop-shadow(0 0 6px ${color}80)` }}
+        style={{ filter: `drop-shadow(0 0 2px ${color}40)` }}
       />
     </svg>
   )
@@ -181,7 +157,7 @@ export function AcademicHealthScore({ data, loading, compact }: AcademicHealthSc
   }
 
   const palette = COLOR_MAP[data.color] ?? COLOR_MAP.blue
-  const ringSize = compact ? 120 : 160
+  const ringSize = compact ? 120 : 180
 
   return (
     <motion.div
@@ -190,11 +166,7 @@ export function AcademicHealthScore({ data, loading, compact }: AcademicHealthSc
       transition={{ duration: 0.5 }}
       className={`bg-white border border-[#E2E8F0] rounded-2xl ${compact ? "p-4" : "p-6"} shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden relative`}
     >
-      {/* Glow blob */}
-      <div
-        className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-20 blur-3xl pointer-events-none"
-        style={{ background: palette.ring }}
-      />
+      {/* Glow blob removed */}
 
       {/* Header */}
       <div className="flex items-center justify-between mb-4">

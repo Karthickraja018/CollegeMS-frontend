@@ -25,14 +25,14 @@ export function MessageList() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
 
-  const renderMessage = (msg: Message) => {
+  const renderMessage = (msg: Message, index: number) => {
     const isUser = msg.role === 'user'
     const agentCfg = msg.agent ? AGENT_CONFIG[msg.agent] : null
     const AgentIcon = agentCfg?.icon
 
     return (
       <motion.div 
-        key={msg.id} 
+        key={msg.id || `msg-${index}`} 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className={`flex gap-4 w-full group ${isUser ? 'flex-row-reverse' : 'flex-row'}`}

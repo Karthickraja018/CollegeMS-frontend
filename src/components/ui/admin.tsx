@@ -31,7 +31,7 @@ export function PageHeader({ title, subtitle, actions, badge }: PageHeaderProps)
         <div className="flex items-center gap-3 mb-1">
           <h1 className="text-2xl font-bold text-[#0F172A] tracking-tight">{title}</h1>
           {badge && (
-            <span className="px-2 py-0.5 text-xs font-semibold bg-[#6366F1]/10 text-[#6366F1] rounded-full">
+            <span className="px-2 py-0.5 text-xs font-semibold bg-[#4F46E5]/10 text-[#4F46E5] rounded-full">
               {badge}
             </span>
           )}
@@ -57,7 +57,7 @@ interface StatCardProps {
   index?: number
 }
 
-export function StatCard({ label, value, icon: Icon, trend, trendLabel, color = "#6366F1", index = 0 }: StatCardProps) {
+export function StatCard({ label, value, icon: Icon, trend, trendLabel, color = "#4F46E5", index = 0 }: StatCardProps) {
   const isPositive = trend !== undefined && trend >= 0
   return (
     <motion.div
@@ -206,7 +206,7 @@ export function FilterBar({ search, onSearch, placeholder, searchPlaceholder, fi
             value={search}
             onChange={(e) => onSearch(e.target.value)}
             placeholder={ph}
-            className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30 focus:border-[#6366F1] placeholder:text-[#CBD5E1] transition-all"
+            className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/30 focus:border-[#4F46E5] placeholder:text-[#CBD5E1] transition-all"
           />
           {search && (
             <button
@@ -242,7 +242,7 @@ export function SelectFilter({ value, onChange, options, placeholder = "All", cl
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className={cn(
-        "px-3 py-2 text-sm bg-white border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30 focus:border-[#6366F1] text-[#475569] cursor-pointer transition-all",
+        "px-3 py-2 text-sm bg-white border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/30 focus:border-[#4F46E5] text-[#475569] cursor-pointer transition-all",
         className
       )}
     >
@@ -416,7 +416,7 @@ export function Pagination({ page, pageSize, total, onChange }: PaginationProps)
               onClick={() => onChange(p)}
               className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-semibold transition-all ${
                 p === page
-                  ? "bg-[#6366F1] text-white shadow-sm"
+                  ? "bg-[#4F46E5] text-white shadow-sm"
                   : "border border-[#E2E8F0] text-[#475569] hover:bg-[#F1F5F9]"
               }`}
             >
@@ -469,8 +469,8 @@ export function ConfirmDialog({ open, title, message, confirmLabel = "Confirm", 
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] p-6 max-w-sm w-full mx-4"
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${danger ? "bg-red-50" : "bg-[#6366F1]/10"}`}>
-              <AlertCircle size={20} className={danger ? "text-red-500" : "text-[#6366F1]"} />
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${danger ? "bg-red-50" : "bg-[#4F46E5]/10"}`}>
+              <AlertCircle size={20} className={danger ? "text-red-500" : "text-[#4F46E5]"} />
             </div>
             <h3 className="text-base font-bold text-[#0F172A] mb-2">{title}</h3>
             <p className="text-sm text-[#64748B]">{message}</p>
@@ -486,7 +486,7 @@ export function ConfirmDialog({ open, title, message, confirmLabel = "Confirm", 
                 className={`flex-1 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all ${
                   danger
                     ? "bg-red-500 hover:bg-red-600 shadow-red-100 shadow-sm"
-                    : "bg-[#6366F1] hover:bg-[#4F46E5] shadow-[#6366F1]/20 shadow-sm"
+                    : "bg-[#4F46E5] hover:bg-[#4F46E5] shadow-[#4F46E5]/20 shadow-sm"
                 }`}
               >
                 {confirmLabel}
@@ -581,7 +581,7 @@ export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInp
     <input
       {...props}
       className={cn(
-        "w-full px-3 py-2 text-sm border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30 focus:border-[#6366F1] placeholder:text-[#CBD5E1] transition-all bg-white",
+        "w-full px-3 py-2 text-sm border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/30 focus:border-[#4F46E5] placeholder:text-[#CBD5E1] transition-all bg-white",
         className
       )}
     />
@@ -593,7 +593,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
     <select
       {...props}
       className={cn(
-        "w-full px-3 py-2 text-sm border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30 focus:border-[#6366F1] bg-white cursor-pointer transition-all text-[#334155]",
+        "w-full px-3 py-2 text-sm border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/30 focus:border-[#4F46E5] bg-white cursor-pointer transition-all text-[#334155]",
         className
       )}
     >
@@ -610,7 +610,7 @@ export function LoadingPage() {
   return (
     <div className="flex items-center justify-center h-64">
       <div className="flex flex-col items-center gap-3">
-        <Loader2 size={28} className="text-[#6366F1] animate-spin" />
+        <Loader2 size={28} className="text-[#4F46E5] animate-spin" />
         <span className="text-sm text-[#94A3B8] font-medium">Loading…</span>
       </div>
     </div>
@@ -657,7 +657,7 @@ interface BtnProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export function Btn({ variant = "primary", loading, isLoading, icon: Icon, children, className, size = "md", ...props }: BtnProps) {
   const busy = loading || isLoading
   const styles = {
-    primary: "bg-[#6366F1] hover:bg-[#4F46E5] text-white shadow-sm shadow-[#6366F1]/20",
+    primary: "bg-[#4F46E5] hover:bg-[#4F46E5] text-white shadow-sm shadow-[#4F46E5]/20",
     secondary: "bg-white hover:bg-[#F8FAFC] text-[#475569] border border-[#E2E8F0]",
     danger: "bg-red-500 hover:bg-red-600 text-white shadow-sm shadow-red-200",
     ghost: "bg-transparent hover:bg-[#F1F5F9] text-[#475569]",
@@ -680,3 +680,8 @@ export function Btn({ variant = "primary", loading, isLoading, icon: Icon, child
     </button>
   )
 }
+
+export * from "./admin/InsightsPanel"
+export * from "./admin/UserDrawer"
+export * from "./admin/PermissionMatrix"
+export * from "./admin/DepartmentOverview"

@@ -8,24 +8,39 @@ import { ChatLayout } from '@/components/chat/chat-layout'
 import { EmptyState } from '@/components/chat/empty-state'
 import { MessageList } from '@/components/chat/message-list'
 import { ContextPanel } from '@/components/chat/context-panel'
-import { useChatHistory } from '@/queries/chat-queries'
+import { useChatHistory, useChatSession } from '@/queries/chat-queries'
+import { useQueryClient } from '@tanstack/react-query'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
 
 // A simple Artifacts Drawer content
 function ArtifactsSidebar() {
+  const { setSessionKey, sessionKey } = useChatStore()
   const { data: history, isLoading } = useChatHistory()
 
   return (
     <div className="p-4 flex flex-col gap-6">
       <div>
-        <h4 className="text-xs font-medium text-[var(--text-muted)] mb-3 uppercase tracking-wider">Recent Analyses</h4>
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Recent Analyses</h4>
+          <button 
+            onClick={() => setSessionKey(null)}
+            className="text-xs font-semibold text-indigo-500 hover:text-indigo-600 transition-colors"
+          >
+            New Chat
+          </button>
+        </div>
         <div className="flex flex-col gap-2">
           {isLoading ? (
             <div className="text-sm text-[var(--text-muted)] italic px-2">Loading history...</div>
           ) : history && history.length > 0 ? (
             history.map((item: any) => (
-              <div key={item.id} className="text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] p-2 rounded-md cursor-pointer transition-colors line-clamp-2" title={item.result_summary}>
+              <div 
+                key={item.id} 
+                onClick={() => setSessionKey(item.session_key)}
+                className={`text-sm p-2 rounded-md cursor-pointer transition-colors line-clamp-2 ${sessionKey === item.session_key ? 'bg-indigo-50 text-indigo-700 font-medium border border-indigo-100' : 'text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
+                title={item.title}
+              >
                 {item.title}
               </div>
             ))
@@ -40,13 +55,25 @@ function ArtifactsSidebar() {
 
 export default function ChatPage() {
   const { 
-    messages, addMessage, updateMessage, 
+    messages, setMessages, addMessage, updateMessage, clearMessages,
     input, setInput, 
     isLoading, setIsLoading,
     setActiveAgent, setAgentPipeline,
     sessionKey, setSessionKey
   } = useChatStore()
   
+  const queryClient = useQueryClient()
+  const { data: sessionData, isFetching: sessionLoading } = useChatSession(sessionKey)
+
+  // Load old messages when switching sessions
+  useEffect(() => {
+    if (sessionKey && sessionData && sessionData.length > 0 && !sessionLoading) {
+      setMessages(sessionData as Message[])
+    } else if (!sessionKey) {
+      clearMessages()
+    }
+  }, [sessionKey, sessionData, sessionLoading, setMessages, clearMessages])
+
   const router = useRouter()
   
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -191,6 +218,7 @@ export default function ChatPage() {
       setIsLoading(false)
       setActiveAgent(null)
       abortRef.current = null
+      queryClient.invalidateQueries({ queryKey: ['chatHistory'] })
     }
   }
 
@@ -207,7 +235,14 @@ export default function ChatPage() {
       sidebarPanel={<ArtifactsSidebar />}
     >
       <div className="flex-1 overflow-hidden flex flex-col w-full h-full">
-        {messages.length === 0 ? (
+        {sessionLoading ? (
+          <div className="flex-1 flex items-center justify-center text-[var(--text-muted)]">
+            <div className="animate-pulse flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              Loading conversation...
+            </div>
+          </div>
+        ) : messages.length === 0 ? (
           <EmptyState onSendMessage={sendMessage} />
         ) : (
           <MessageList />
