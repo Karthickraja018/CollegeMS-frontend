@@ -86,7 +86,7 @@ export function FacultyDashboard() {
           <div className="px-5 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
             <div className="text-sm font-bold text-[#0F172A]">Students Needing Attention</div>
             <button
-              onClick={() => router.push("/intelligence/students")}
+              onClick={() => router.push("/dashboard")}
               className="text-xs text-[#6366F1] font-semibold hover:underline"
             >
               View All →
@@ -113,7 +113,7 @@ export function FacultyDashboard() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  onClick={() => router.push(`/intelligence/students`)}
+                  onClick={() => router.push(`/dashboard`)}
                   className="flex items-center gap-3 px-5 py-3 hover:bg-[#F8FAFC] cursor-pointer transition-colors"
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -145,8 +145,8 @@ export function FacultyDashboard() {
             <div className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider mb-3">Quick Actions</div>
             <div className="flex flex-col gap-2">
               {[
-                { label: "View All Students", href: "/intelligence/students", icon: GraduationCap, color: "#6366F1" },
-                { label: "Critical Risk Alerts", href: "/intelligence/students?risk_level=critical", icon: AlertTriangle, color: "#EF4444" },
+                { label: "View All Students", href: "/dashboard", icon: GraduationCap, color: "#6366F1" },
+                { label: "Critical Risk Alerts", href: "/dashboard", icon: AlertTriangle, color: "#EF4444" },
                 { label: "AI Copilot", href: "/chat", icon: MessageSquare, color: "#8B5CF6" },
               ].map(action => (
                 <a

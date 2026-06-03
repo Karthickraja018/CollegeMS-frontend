@@ -117,8 +117,8 @@ export function HodDashboard() {
             <div className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider mb-3">Quick Actions</div>
             <div className="flex flex-col gap-2">
               {[
-                { label: "Student Intelligence", href: "/intelligence/students", color: "#6366F1" },
-                { label: "Department Analytics", href: "/intelligence/departments", color: "#10B981" },
+                { label: "Student Intelligence", href: "/dashboard", color: "#6366F1" },
+                { label: "Department Analytics", href: "/dashboard", color: "#10B981" },
                 { label: "AI Copilot", href: "/chat", color: "#8B5CF6" },
                 { label: "Department Reports", href: "/accreditation", color: "#F59E0B" },
               ].map(action => (

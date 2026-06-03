@@ -78,8 +78,19 @@ function getNavGroups(role: UserRole | undefined): NavGroup[] {
         {
           title: "Analytics",
           items: [
-            { href: "/intelligence/students", label: "Student Intelligence", icon: GraduationCap },
             { href: "/intelligence/departments", label: "Department Intelligence", icon: Building2 },
+          ],
+        },
+        {
+          title: "People",
+          items: [
+            { href: "/principal/faculty", label: "Faculty Performance", icon: Users },
+            { href: "/principal/hod", label: "HOD Performance", icon: GraduationCap },
+          ],
+        },
+        {
+          title: "Reports",
+          items: [
             { href: "/accreditation", label: "Accreditation & Reports", icon: FileText },
           ],
         },
@@ -104,7 +115,7 @@ function getNavGroups(role: UserRole | undefined): NavGroup[] {
           title: "Analytics",
           items: [
             { href: "/intelligence/students", label: "Student Intelligence", icon: GraduationCap },
-            { href: "/intelligence/departments", label: "Department Intelligence", icon: Building2 },
+            { href: "/intelligence/departments", label: "Department Analytics", icon: Building2 },
           ],
         },
         {
@@ -127,12 +138,7 @@ function getNavGroups(role: UserRole | undefined): NavGroup[] {
         {
           title: "Students",
           items: [
-            { href: "/intelligence/students", label: "Student Intelligence", icon: GraduationCap },
-            {
-              href: "/intelligence/students?risk_level=critical",
-              label: "Risk Alerts",
-              icon: AlertTriangle,
-            },
+            { href: "/intelligence/students", label: "Student Risk Alerts", icon: AlertTriangle },
           ],
         },
       ]

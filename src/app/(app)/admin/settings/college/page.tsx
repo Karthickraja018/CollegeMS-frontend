@@ -12,7 +12,7 @@ const NAAC_GRADES = ["A++", "A+", "A", "B++", "B+", "B", "C", "D"]
 export default function CollegeSettingsPage() {
   const qc = useQueryClient()
   const [form, setForm] = useState<any>({})
-  const [tab, setTab] = useState<"general" | "accreditation" | "naac">("general")
+  const [tab, setTab] = useState<"general" | "accreditation" | "naac" | "thresholds">("general")
   const [saved, setSaved] = useState(false)
 
   const { data: college, isLoading } = useQuery({
@@ -72,12 +72,12 @@ export default function CollegeSettingsPage() {
       />
 
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[#F1F5F9] rounded-xl p-1 w-fit">
-        {(["general", "accreditation", "naac"] as const).map(t => (
+      <div className="flex gap-1 bg-[#F1F5F9] rounded-xl p-1 w-fit flex-wrap">
+        {(["general", "accreditation", "naac", "thresholds"] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`text-sm font-semibold px-4 py-1.5 rounded-lg transition capitalize ${tab === t ? "bg-white text-[#6366F1] shadow-sm" : "text-[#64748B] hover:text-[#0F172A]"}`}
           >
-            {t === "naac" ? "NAAC Data" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === "naac" ? "NAAC Data" : t === "thresholds" ? "Academic Thresholds" : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -134,6 +134,51 @@ export default function CollegeSettingsPage() {
                 onChange={e => setForm((f: any) => ({ ...f, is_autonomous: e.target.checked }))}
                 className="w-4 h-4 accent-[#6366F1]" />
               <label htmlFor="is_autonomous" className="text-sm text-[#374151] font-medium">Autonomous Institution</label>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === "thresholds" && (
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-5">
+            <Award size={16} className="text-[#6366F1]" />
+            <h3 className="text-sm font-bold text-[#0F172A]">Academic Thresholds</h3>
+          </div>
+          <p className="text-xs text-[#64748B] mb-6">Configure global thresholds for student risk analysis and faculty metrics. These values are used to categorize students.</p>
+          
+          <div className="grid grid-cols-1 gap-6">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-bold text-[#0F172A]">Risk Score Threshold</label>
+              <p className="text-xs text-[#64748B] mb-1">Students with a risk score above this value will be flagged globally as 'At-Risk'. (0-100)</p>
+              <input
+                type="number"
+                value={form.settings?.risk_score_threshold ?? 60}
+                onChange={e => setForm((f: any) => ({ ...f, settings: { ...(f.settings || {}), risk_score_threshold: Number(e.target.value) } }))}
+                className="max-w-md text-sm px-3 py-2 border border-[#E2E8F0] rounded-xl outline-none focus:ring-2 focus:ring-[#6366F1]/30"
+              />
+            </div>
+            
+            <div className="flex flex-col gap-1 pt-4 border-t border-[#F1F5F9]">
+              <label className="text-sm font-bold text-[#0F172A]">Minimum Attendance Requirement (%)</label>
+              <p className="text-xs text-[#64748B] mb-1">Students falling below this percentage will be highlighted for 'Low Attendance'.</p>
+              <input
+                type="number"
+                value={form.settings?.attendance_threshold ?? 75}
+                onChange={e => setForm((f: any) => ({ ...f, settings: { ...(f.settings || {}), attendance_threshold: Number(e.target.value) } }))}
+                className="max-w-md text-sm px-3 py-2 border border-[#E2E8F0] rounded-xl outline-none focus:ring-2 focus:ring-[#6366F1]/30"
+              />
+            </div>
+            
+            <div className="flex flex-col gap-1 pt-4 border-t border-[#F1F5F9]">
+              <label className="text-sm font-bold text-[#0F172A]">Subject Pass Mark (%)</label>
+              <p className="text-xs text-[#64748B] mb-1">The minimum percentage required to pass a subject.</p>
+              <input
+                type="number"
+                value={form.settings?.pass_mark_threshold ?? 50}
+                onChange={e => setForm((f: any) => ({ ...f, settings: { ...(f.settings || {}), pass_mark_threshold: Number(e.target.value) } }))}
+                className="max-w-md text-sm px-3 py-2 border border-[#E2E8F0] rounded-xl outline-none focus:ring-2 focus:ring-[#6366F1]/30"
+              />
             </div>
           </div>
         </div>
