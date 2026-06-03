@@ -15,24 +15,18 @@
   --bg-hover:        #F1F5F9;
 
   /* Brand */
-  --indigo:          #6366F1;
-  --indigo-dim:      #4F46E5;
-  --indigo-glow:     rgba(99, 102, 241, 0.1);
+  --primary:         #4F46E5;
+  --primary-light:   #EEF2FF;
+  --primary-dark:    #3730A3;
 
-  /* Semantic */
-  --success:         #10B981;
-  --warning:         #F59E0B;
-  --danger:          #EF4444;
-  --info:            #3B82F6;
-
-  /* Text */
+  /* Neutral */
+  --background:      #F8FAFC;
+  --surface:         #FFFFFF;
+  --border:          #E2E8F0;
   --text-primary:    #0F172A;
-  --text-secondary:  #475569;
+  --text-secondary:  #64748B;
   --text-muted:      #94A3B8;
   --text-inverse:    #FFFFFF;
-
-  /* Borders */
-  --border:         oklch(0.922 0 0);
 
   /* Sidebar */
   --sidebar-width:   280px;
@@ -43,8 +37,7 @@
   --card-foreground:         oklch(0.145 0 0);
   --popover:         oklch(1 0 0);
   --popover-foreground:         oklch(0.145 0 0);
-  --primary:         oklch(0.205 0 0);
-  --primary-foreground:         oklch(0.985 0 0);
+  --primary-foreground:         #FFFFFF;
   --secondary:         oklch(0.97 0 0);
   --secondary-foreground:         oklch(0.205 0 0);
   --muted:         oklch(0.97 0 0);
@@ -175,7 +168,6 @@ body {
   --card-foreground:         oklch(0.985 0 0);
   --popover:         oklch(0.205 0 0);
   --popover-foreground:         oklch(0.985 0 0);
-  --primary:         oklch(0.922 0 0);
   --primary-foreground:         oklch(0.205 0 0);
   --secondary:         oklch(0.269 0 0);
   --secondary-foreground:         oklch(0.985 0 0);
