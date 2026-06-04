@@ -7,11 +7,10 @@ import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, History
 
 interface ChatLayoutProps {
   children: React.ReactNode
-  contextPanel: React.ReactNode
   sidebarPanel: React.ReactNode
 }
 
-export function ChatLayout({ children, contextPanel, sidebarPanel }: ChatLayoutProps) {
+export function ChatLayout({ children, sidebarPanel }: ChatLayoutProps) {
   const { isContextPanelOpen, toggleContextPanel, isArtifactDrawerOpen, toggleArtifactDrawer } = useChatStore()
 
   return (
@@ -58,17 +57,6 @@ export function ChatLayout({ children, contextPanel, sidebarPanel }: ChatLayoutP
               </button>
             )}
           </div>
-          <div className="pointer-events-auto">
-            {!isContextPanelOpen && (
-              <button 
-                onClick={toggleContextPanel}
-                className="p-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg shadow-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
-                title="Open Context Panel"
-              >
-                <PanelRightOpen size={18} />
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Chat Content */}
@@ -77,30 +65,7 @@ export function ChatLayout({ children, contextPanel, sidebarPanel }: ChatLayoutP
         </div>
       </div>
 
-      {/* Right Context Panel */}
-      <AnimatePresence initial={false}>
-        {isContextPanelOpen && (
-          <motion.div
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 320, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
-            className="h-full border-l border-[var(--border)] bg-[var(--bg-surface)] flex-shrink-0 z-20 shadow-xl"
-          >
-            <div className="w-[320px] h-full flex flex-col">
-              <div className="h-14 flex items-center justify-between px-4 border-b border-[var(--border)]">
-                <span className="font-semibold text-sm">Analysis Context</span>
-                <button onClick={toggleContextPanel} className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-md text-[var(--text-muted)]">
-                  <PanelRightClose size={18} />
-                </button>
-              </div>
-              <div className="flex-1 overflow-y-auto">
-                {contextPanel}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
 
     </div>
   )

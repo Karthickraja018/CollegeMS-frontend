@@ -1,19 +1,56 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Sparkles, Send, BarChart3, Users, Clock, AlertTriangle } from 'lucide-react'
+import { Sparkles, Send, BarChart3, Users, Clock, AlertTriangle, Briefcase, Activity, ShieldCheck, FileText } from 'lucide-react'
+import { useUserStore } from '@/store'
 
-const SUGGESTED_PROMPTS = [
-  { text: "Analyze attendance patterns", icon: Clock },
-  { text: "Compare department performance", icon: BarChart3 },
-  { text: "Find at-risk students", icon: AlertTriangle },
-  { text: "Review faculty workload", icon: Users },
-]
+const ROLE_PROMPTS: Record<string, { text: string; icon: React.ElementType }[]> = {
+  admin: [
+    { text: "System health and usage overview", icon: Activity },
+    { text: "Audit AI query usage today", icon: ShieldCheck },
+    { text: "Show all department KPIs", icon: BarChart3 },
+    { text: "Check latest data sync status", icon: Clock },
+  ],
+  college_admin: [
+    { text: "System health and usage overview", icon: Activity },
+    { text: "Audit AI query usage today", icon: ShieldCheck },
+    { text: "Show all department KPIs", icon: BarChart3 },
+    { text: "Check latest data sync status", icon: Clock },
+  ],
+  principal: [
+    { text: "Executive summary for the month", icon: FileText },
+    { text: "Compare all department performance", icon: BarChart3 },
+    { text: "Show institution risk analysis", icon: AlertTriangle },
+    { text: "Accreditation readiness report", icon: ShieldCheck },
+  ],
+  hod: [
+    { text: "Analyze department attendance patterns", icon: Clock },
+    { text: "Find at-risk students in my department", icon: AlertTriangle },
+    { text: "Review faculty workload", icon: Briefcase },
+    { text: "Generate department report", icon: FileText },
+  ],
+  faculty: [
+    { text: "My students at risk of failing", icon: AlertTriangle },
+    { text: "Show my class attendance trends", icon: Clock },
+    { text: "Automated grading insights", icon: FileText },
+    { text: "Intervention plan for absent students", icon: Users },
+  ],
+  default: [
+    { text: "Analyze attendance patterns", icon: Clock },
+    { text: "Compare department performance", icon: BarChart3 },
+    { text: "Find at-risk students", icon: AlertTriangle },
+    { text: "Review faculty workload", icon: Users },
+  ]
+}
 
 interface EmptyStateProps {
   onSendMessage: (msg: string) => void
 }
 
 export function EmptyState({ onSendMessage }: EmptyStateProps) {
+  const user = useUserStore((s) => s.user)
+  const role = user?.role || "default"
+  const suggestedPrompts = ROLE_PROMPTS[role] || ROLE_PROMPTS.default
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8 w-full max-w-2xl mx-auto h-full min-h-[500px]">
       <motion.div
@@ -44,7 +81,7 @@ export function EmptyState({ onSendMessage }: EmptyStateProps) {
       </motion.p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-        {SUGGESTED_PROMPTS.map((prompt, i) => (
+        {suggestedPrompts.map((prompt, i) => (
           <motion.button
             key={prompt.text}
             initial={{ opacity: 0, y: 10 }}

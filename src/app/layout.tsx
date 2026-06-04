@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "CollegeMS — Enterprise College Management",
-  description: "Manage your institution with AI agents, real-time analytics, and smart reports.",
+  title: "Axivora | AI-Powered Academic Intelligence Platform",
+  description: "Axivora transforms institutional data into actionable intelligence using AI-powered analytics, risk prediction, automated reporting, and executive insights.",
 }
 
 export default function RootLayout({

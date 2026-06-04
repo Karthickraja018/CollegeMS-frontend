@@ -80,10 +80,9 @@ export function MessageList() {
           {!isUser && msg.chartSpec && <ChartRenderer spec={msg.chartSpec} />}
           
           {/* Example SQL - normally passed from backend, stubbing for UI */}
-          {!isUser && (msg.tableData || msg.chartSpec) && !msg.isStreaming && (
+          {!isUser && msg.sql && !msg.isStreaming && (
             <SqlTransparency 
-              sql={`SELECT *\nFROM analysis_data\nWHERE context = 'demo'`}
-              executionTime={320}
+              sql={msg.sql}
               rowsReturned={msg.tableData?.row_count}
             />
           )}

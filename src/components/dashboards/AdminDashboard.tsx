@@ -22,7 +22,7 @@ function DashboardHeader({ score, loading }: { score?: number, loading: boolean 
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
       <div>
-        <h1 className="text-[32px] font-bold text-[#0F172A] tracking-tight leading-none mb-2">Good Morning, Admin</h1>
+        <h1 className="text-[32px] font-bold text-[#0F172A] tracking-tight leading-none mb-2">Welcome admin</h1>
         <div className="flex items-center gap-3 text-sm font-medium">
           <span className="text-[#64748B]">Academic Health Score: <span className="text-[#0F172A] font-bold">{loading ? "..." : score ?? "—"}</span></span>
           <span className="text-[#E2E8F0]">•</span>
@@ -157,7 +157,7 @@ export function AdminDashboard() {
               <div className="w-8 h-8 rounded-lg bg-[#4F46E5] flex items-center justify-center text-white">
                 <Cpu size={16} />
               </div>
-              <h2 className="text-lg font-bold text-[#0F172A]">CollegeMS AI Command Center</h2>
+              <h2 className="text-lg font-bold text-[#0F172A]">Axivora AI Command Center</h2>
             </div>
             
             <div className="space-y-4 mb-6">
