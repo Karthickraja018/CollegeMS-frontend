@@ -1,7 +1,8 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Zap, Loader2, ArrowRight } from "lucide-react"
+import Image from "next/image"
+import { Loader2, ArrowRight } from "lucide-react"
 import { api } from "@/services/api"
 
 /* Hallmark · component: LoginPage · genre: modern-minimal · theme: Quiet
@@ -53,11 +54,11 @@ export default function LoginPage() {
           {/* Header */}
           <div className="space-y-3">
             <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center border border-primary/10 shadow-sm mb-6">
-              <Zap className="w-6 h-6 text-primary" />
+              <Image src="/Axivora-logo.png" alt="Axivora Logo" width={24} height={24} className="rounded-sm" />
             </div>
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Welcome back</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">Welcome to Axivora</h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Sign in to access the College Management Platform workspace.
+              AI-Powered Academic Intelligence Platform
             </p>
           </div>
 
@@ -152,11 +153,11 @@ export default function LoginPage() {
         <div className="relative z-10 p-24 flex flex-col justify-between h-full w-full max-w-2xl text-zinc-400">
           <div className="space-y-4 mt-auto">
             <blockquote className="text-2xl font-light text-zinc-100 leading-snug">
-              "A comprehensive operating system for modern academic institutions. Every workflow, streamlined."
+              "Transform institutional data into actionable intelligence. The intelligence platform for modern academic institutions."
             </blockquote>
             <div className="flex items-center gap-3 text-sm">
               <div className="w-8 h-[1px] bg-zinc-700" />
-              <span>CollegeMS Platform v1.0</span>
+              <span>Axivora Intelligence Platform v1.0</span>
             </div>
           </div>
         </div>

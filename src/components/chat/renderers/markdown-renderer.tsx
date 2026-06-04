@@ -18,7 +18,7 @@ export function MarkdownRenderer({ content, isStreaming }: MarkdownRendererProps
         <motion.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ repeat: Infinity, duration: 0.8, direction: 'alternate' }}
+          transition={{ repeat: Infinity, duration: 0.8, repeatType: 'reverse' }}
           className="inline-block w-2 h-4 bg-indigo-500 ml-1 translate-y-1 rounded-[1px]"
         />
       )}

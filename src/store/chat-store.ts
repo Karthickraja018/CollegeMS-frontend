@@ -11,6 +11,7 @@ export interface Message {
     row_count: number
     source?: string
   }
+  sql?: string
   chartSpec?: any
   reportUrl?: string
   isStreaming?: boolean

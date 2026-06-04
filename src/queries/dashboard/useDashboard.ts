@@ -58,6 +58,7 @@ export interface DashboardKPIs {
   dept_faculty?: number      // HOD: faculty count in dept
   dept_subjects?: number     // HOD: subject count in dept
   faculty_count?: number
+  faculty_compliance?: number
   department_name?: string
   // Faculty-specific
   assigned_students?: number

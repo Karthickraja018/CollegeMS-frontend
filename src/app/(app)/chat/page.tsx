@@ -7,7 +7,7 @@ import { useChatStore, Message } from '@/store/chat-store'
 import { ChatLayout } from '@/components/chat/chat-layout'
 import { EmptyState } from '@/components/chat/empty-state'
 import { MessageList } from '@/components/chat/message-list'
-import { ContextPanel } from '@/components/chat/context-panel'
+
 import { useChatHistory, useChatSession } from '@/queries/chat-queries'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -178,6 +178,8 @@ export default function ChatPage() {
                   row_count: rows.length
                 }
               })
+            } else if (event.type === 'sql_query') {
+              updateMessage(assistantId, { sql: event.sql })
             } else if (event.type === 'insights') {
               updateMessage(assistantId, { insights: event.data })
             } else if (event.type === 'recommendations') {
@@ -231,7 +233,6 @@ export default function ChatPage() {
 
   return (
     <ChatLayout 
-      contextPanel={<ContextPanel />}
       sidebarPanel={<ArtifactsSidebar />}
     >
       <div className="flex-1 overflow-hidden flex flex-col w-full h-full">
@@ -290,7 +291,7 @@ export default function ChatPage() {
               </div>
             </div>
             <p className="text-center text-xs text-[var(--text-muted)] mt-3">
-              CollegeMS AI can make mistakes. Consider verifying critical data.
+              Axivora AI can make mistakes. Consider verifying critical data.
             </p>
           </div>
         </div>

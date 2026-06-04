@@ -7,6 +7,7 @@ export const studentKeys = {
   attendanceTrend: (id: number) => ["students", "attendance-trend", id] as const,
   marksTrend: (id: number) => ["students", "marks-trend", id] as const,
   recommendations: (id: number) => ["students", "recommendations", id] as const,
+  interventions: (id: number) => ["students", "interventions", id] as const,
 }
 
 export function useAtRiskStudents(params: {
@@ -61,5 +62,23 @@ export function useStudentRecommendations(studentId: number | null) {
     queryFn: () => api.get(`/student-intelligence/${studentId}/recommendations`).then((r) => r.data),
     enabled: studentId != null,
     staleTime: 300_000,
+  })
+}
+
+export function useStudentInterventions(studentId: number | null) {
+  return useQuery({
+    queryKey: studentKeys.interventions(studentId!),
+    queryFn: () => api.get(`/student-intelligence/${studentId}/interventions`).then((r) => r.data),
+    enabled: studentId != null,
+    staleTime: 60_000,
+  })
+}
+
+export function useStudentWeeklyAttendance(studentId: number | null) {
+  return useQuery({
+    queryKey: ["students", "weekly-attendance", studentId!],
+    queryFn: () => api.get(`/student-intelligence/${studentId}/weekly-attendance`).then((r) => r.data),
+    enabled: studentId != null,
+    staleTime: 60_000,
   })
 }

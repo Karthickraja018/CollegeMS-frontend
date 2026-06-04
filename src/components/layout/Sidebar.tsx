@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import {
   LayoutDashboard,
@@ -115,6 +116,7 @@ function getNavGroups(role: UserRole | undefined): NavGroup[] {
           title: "Analytics",
           items: [
             { href: "/intelligence/students", label: "Student Intelligence", icon: GraduationCap },
+            { href: "/intelligence/faculty", label: "Faculty Intelligence", icon: Users },
             { href: "/intelligence/departments", label: "Department Analytics", icon: Building2 },
           ],
         },
@@ -308,11 +310,11 @@ export default function Sidebar() {
       {/* Logo / Workspace */}
       <div className="p-4 border-b border-[#E2E8F0]">
         <div className="flex items-center gap-3 p-2 hover:bg-[#F1F5F9] rounded-lg cursor-pointer transition-colors">
-          <div className="w-8 h-8 rounded-lg bg-[#4F46E5] flex items-center justify-center text-white font-bold text-sm shadow-sm flex-shrink-0">
-            C
+          <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+            <Image src="/Axivora-logo.png" alt="Axivora" width={32} height={32} className="rounded-md" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-[#0F172A] truncate">CollegeMS</div>
+            <div className="text-sm font-semibold text-[#0F172A] truncate">Axivora</div>
             <div className="text-xs text-[#94A3B8] truncate">Academic Intelligence</div>
           </div>
           {badge && (
