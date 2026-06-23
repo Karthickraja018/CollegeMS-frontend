@@ -88,12 +88,23 @@ export function MessageList() {
           )}
 
           {!isUser && !msg.isStreaming && (
-            <MessageActions 
-              content={msg.content}
-              hasTable={!!msg.tableData}
-              hasChart={!!msg.chartSpec}
-              tableData={msg.tableData}
-            />
+            <div className="flex items-center justify-between w-full mt-1">
+              <MessageActions 
+                content={msg.content}
+                hasTable={!!msg.tableData}
+                hasChart={!!msg.chartSpec}
+                tableData={msg.tableData}
+              />
+              {msg.token_usage && (
+                <div className="text-[10px] text-[var(--text-muted)] flex items-center gap-1.5 opacity-60">
+                  <span title="Prompt tokens">{msg.token_usage.prompt_tokens} in</span>
+                  <span>•</span>
+                  <span title="Completion tokens">{msg.token_usage.completion_tokens} out</span>
+                  <span>•</span>
+                  <span className="font-medium" title="Total tokens">{msg.token_usage.total_tokens} total tokens</span>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </motion.div>

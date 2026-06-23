@@ -192,6 +192,8 @@ export default function ChatPage() {
               updateMessage(assistantId, { risk_analysis: event.data })
             } else if (event.type === 'analytics') {
               updateMessage(assistantId, { analytics: event.data })
+            } else if (event.type === 'token_usage') {
+              updateMessage(assistantId, { token_usage: event.data })
             } else if (event.type === 'analysis') {
               // Fallback for V1
               updateMessage(assistantId, {
