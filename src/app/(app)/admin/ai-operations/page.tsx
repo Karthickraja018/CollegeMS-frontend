@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { aiOpsApi } from "@/services/admin"
 import { PageHeader, Btn } from "@/components/ui/admin"
-import { Bot, Zap, Database, Clock, Users, Activity, RefreshCw, TrendingUp } from "lucide-react"
+import { Bot, Zap, Users, Activity, RefreshCw, TrendingUp, Cpu } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -11,16 +11,22 @@ import {
 } from "recharts"
 import { motion } from "framer-motion"
 
+function fmtTokens(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
+  return String(n)
+}
+
 export default function AIOperationsPage() {
   const qc = useQueryClient()
 
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats } = useQuery({
     queryKey: ["ai-ops-stats"],
     queryFn: aiOpsApi.getStats,
     staleTime: 30_000,
   })
 
-  const { data: sessions = [], isLoading: loadingSessions } = useQuery({
+  const { data: sessions = [] } = useQuery({
     queryKey: ["ai-sessions"],
     queryFn: () => aiOpsApi.getSessions({ page: 1, page_size: 10 }),
     staleTime: 30_000,
@@ -39,12 +45,22 @@ export default function AIOperationsPage() {
   const risk = stats?.risk_monitoring || {}
   const reports = stats?.reports || {}
   const dailyUsage = stats?.daily_usage || []
+  const tokenUsage = stats?.token_usage || {}
+  const dailyTokens = stats?.daily_tokens || []
 
   const kpis = [
     { label: "Total Sessions", value: chat.total_sessions || 0, icon: Bot, color: "#6366F1" },
     { label: "Unique Users", value: chat.unique_users || 0, icon: Users, color: "#10B981" },
     { label: "Sessions Today", value: chat.sessions_today || 0, icon: Activity, color: "#F59E0B" },
     { label: "Avg Messages/Session", value: chat.avg_messages_per_session || "—", icon: TrendingUp, color: "#8B5CF6" },
+  ]
+
+  const tokenKpis = [
+    { label: "Total Tokens Used", value: fmtTokens(tokenUsage.total_tokens || 0), color: "#6366F1" },
+    { label: "Prompt Tokens", value: fmtTokens(tokenUsage.prompt_tokens || 0), color: "#64748B" },
+    { label: "Completion Tokens", value: fmtTokens(tokenUsage.completion_tokens || 0), color: "#64748B" },
+    { label: "Tokens Today", value: fmtTokens(tokenUsage.tokens_today || 0), color: "#10B981" },
+    { label: "Tokens (7 days)", value: fmtTokens(tokenUsage.tokens_last_7d || 0), color: "#F59E0B" },
   ]
 
   return (
@@ -74,6 +90,44 @@ export default function AIOperationsPage() {
             </div>
           </motion.div>
         ))}
+      </div>
+
+      {/* Token Usage */}
+      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Cpu size={15} className="text-[#6366F1]" />
+          <h3 className="text-sm font-bold text-[#0F172A] uppercase tracking-wider">API Token Usage</h3>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5">
+          {tokenKpis.map((t) => (
+            <div key={t.label} className="p-3 rounded-xl border border-[#F1F5F9]">
+              <div className="text-xl font-bold font-mono" style={{ color: t.color }}>{t.value}</div>
+              <div className="text-xs text-[#94A3B8] mt-0.5">{t.label}</div>
+            </div>
+          ))}
+        </div>
+        {dailyTokens.length > 0 && (
+          <div className="h-[160px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={dailyTokens} margin={{ top: 0, right: 10, left: -10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="tokGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6366F1" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <XAxis dataKey="day" tick={{ fontSize: 9, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 9, fill: "#94A3B8" }} axisLine={false} tickLine={false} tickFormatter={(v) => fmtTokens(v)} />
+                <Tooltip formatter={(v: any) => [fmtTokens(Number(v)), "Tokens"]} />
+                <Area type="monotone" dataKey="tokens" stroke="#6366F1" strokeWidth={2} fill="url(#tokGrad)" name="Tokens" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+        {dailyTokens.length === 0 && (
+          <div className="text-sm text-[#94A3B8] text-center py-4">No token data yet — starts tracking once AI chats are used.</div>
+        )}
       </div>
 
       {/* Main content grid */}
